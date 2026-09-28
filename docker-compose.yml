@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sdd_path_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-equipamentos}
+      POSTGRES_USER: ${POSTGRES_USER:-equipamentos_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-equipamentos_dev}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-equipamentos_app} -d ${POSTGRES_DB:-equipamentos}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: sdd_path_backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/equipamentos}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-equipamentos_app}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-equipamentos_dev}
+      SERVER_PORT: 8080
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: sdd_path_frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080}
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    depends_on:
+      - backend
+
+  backend-test:
+    build:
+      context: ./backend
+      target: test
+    profiles: ["test"]
+    environment:
+      TESTCONTAINERS_HOST_OVERRIDE: ${TESTCONTAINERS_HOST_OVERRIDE:-host.docker.internal}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["mvn", "test"]
+
+volumes:
+  postgres_data:
