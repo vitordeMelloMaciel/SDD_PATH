@@ -1,6 +1,6 @@
 ---
 description: Onde cada variavel de ambiente vive e quais valores podem ir ao navegador
-globs: ["**/.env*", "frontend/app/**", "frontend/components/**", "frontend/lib/**", "backend/src/main/resources/**", "docker-compose.yml", "vercel.json"]
+globs: ["**/.env*", "frontend/app/**", "frontend/components/**", "frontend/lib/**", "backend/src/main/resources/**", "docker-compose.yml", "frontend/vercel.json"]
 alwaysApply: false
 ---
 

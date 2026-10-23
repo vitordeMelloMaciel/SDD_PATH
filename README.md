@@ -79,7 +79,7 @@ A skill fica em `.codex/skills/solid/SKILL.md` e deve citar o codigo real, respe
 
 ## Deploy
 
-A Vercel publica apenas o frontend Next.js usando `vercel.json`. O backend Spring Boot precisa de uma hospedagem Java separada; em producao, ele podera usar o PostgreSQL do Supabase por JDBC.
+A Vercel publica apenas o frontend Next.js. No projeto da Vercel, configure `frontend` como **Root Directory**; o `frontend/vercel.json` fixa o pnpm 10 e deixa o adaptador Next usar o diretorio de saida padrao. O backend Spring Boot precisa de uma hospedagem Java separada; em producao, ele podera usar o PostgreSQL do Supabase por JDBC.
 
 O Supabase ainda nao foi provisionado. Consulte `supabase/README.md` e nao adicione credenciais ao Git.
 

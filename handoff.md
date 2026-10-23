@@ -6,7 +6,7 @@
 - Alteracoes locais: ADR-002 implementado no frontend Next.js com Tailwind, componentes acessiveis, Phosphor e CSP com nonce.
 - Banco local: Flyway V1 e V2 aplicadas; `app_user`, `equipment` e `loan` confirmadas; nada foi aplicado remotamente.
 - Supabase: projeto e CLI local ainda nao configurados.
-- Publicado: branch `codex/vercel-deploy` vinculada ao GitHub; `vercel.json` alinhado a Next.js e pnpm 10 para o proximo deploy.
+- Publicado: branch `codex/vercel-deploy` vinculada ao GitHub; a Vercel deve usar `frontend` como Root Directory e `frontend/vercel.json` fixa Next.js e pnpm 10.
 - Verificacao: lockfile congelado com pnpm 10, typecheck, build Next.js, CSP de producao e imagem Docker do frontend passaram.
 - Skill: `.codex/skills/solid/SKILL.md` validada e descoberta pelo Codex CLI em modo somente leitura.
 - Execucao local: frontend `http://localhost:5173`, backend `http://localhost:8080`.
