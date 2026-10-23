@@ -1,6 +1,6 @@
 # Handoff
 
-- Ponto atual: regras consolidadas; ADR-002 registra o layout; Spec 002 e migration V2 do modelo inicial criadas.
+- Ponto atual: regras consolidadas; ADR-002 registra o design system; Spec 002 e migration V2 do modelo inicial criadas.
 - Criterio em andamento: modelo de dados inicial validado; a Spec 001 de login continua aguardando respostas.
 - Branch: `main`; ultimo commit `6cc5d51 Initial commit`.
 - Alteracoes locais: andar zero, regras, frontend visual, modelo de dados e documentos ainda nao commitados.
