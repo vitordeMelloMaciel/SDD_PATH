@@ -3,7 +3,7 @@
 ## Organização de pastas proposta
 
 - `backend/` — aplicação Spring Boot, com código Java, recursos, migrations e testes.
-- `frontend/` — aplicação Vite/TypeScript, com página mínima que consulta o backend.
+- `frontend/` — aplicação Next.js/TypeScript, com página operacional baseada no ADR-002.
 - `docs/` — PRD, ADRs, critérios e planos.
 - `rules/` — limites de autoridade e ritmo do agente.
 
@@ -31,7 +31,7 @@ Por que essa e não outra: o projeto tem dois runtimes no ADR-001, Java e TypeSc
       atende: AZ-04
       verifico assim: `curl http://localhost:8080/health` devolve 200 quando o banco está acessível.
 
-- [x] T6 · Criar página Vite que mostra o resultado do `/health`
+- [x] T6 · Criar frontend Next.js e validar sua execução local
       atende: AZ-05
       verifico assim: abrir `http://localhost:5173` mostra o estado retornado pelo backend.
 

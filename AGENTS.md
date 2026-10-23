@@ -31,8 +31,9 @@ O estado temporario da execucao fica apenas em `handoff.md`.
 - `backend/src/main/java/` — código Java de produção.
 - `backend/src/main/resources/db/migration/` — migrations Flyway.
 - `backend/src/test/java/` — testes automatizados do backend.
-- `frontend/` — aplicação Vite/TypeScript.
-- `frontend/src/` — código TypeScript e CSS do front.
+- `frontend/` — aplicação Next.js/TypeScript.
+- `frontend/app/` — rotas e tokens globais do front.
+- `frontend/components/` — componentes de aplicação e do Design System.
 - `docs/` — artefatos de produto, decisão e planejamento.
 - `rules/` — limites de autoridade e execução.
 

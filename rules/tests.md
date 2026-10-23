@@ -1,6 +1,6 @@
 ---
 description: Como executar e escrever testes neste projeto
-globs: ["backend/src/test/**", "frontend/src/**/*.test.*"]
+globs: ["backend/src/test/**", "frontend/app/**/*.test.*", "frontend/components/**/*.test.*", "frontend/lib/**/*.test.*"]
 alwaysApply: false
 ---
 

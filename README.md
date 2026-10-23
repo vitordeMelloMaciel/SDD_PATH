@@ -1,6 +1,6 @@
 # SDD Path
 
-Sistema interno para controlar emprestimos de equipamentos. O projeto usa Spring Boot, Vite/TypeScript e PostgreSQL, conforme [docs/adr/001-stack.md](docs/adr/001-stack.md).
+Sistema interno para controlar emprestimos de equipamentos. O projeto usa Spring Boot, Next.js/TypeScript e PostgreSQL, conforme [docs/adr/001-stack.md](docs/adr/001-stack.md).
 
 ## Executar localmente
 
@@ -14,7 +14,7 @@ docker compose ps
 - Frontend: `http://localhost:5173`
 - Health da API: `http://localhost:8080/health`
 
-O frontend deve mostrar `Sistema operacional` no rodape da navegacao. No teste manual do prototipo, confira a busca de equipamentos, os filtros de status, o menu em tela pequena e a abertura do formulario `Novo emprestimo`. Essas interacoes ainda nao persistem dados.
+No teste manual do frontend, confira a busca de equipamentos, os filtros por status e categoria, o menu em tela pequena, a navegacao por teclado do controle segmentado e a abertura do formulario `Novo emprestimo`. Essas interacoes ainda nao persistem dados.
 
 ## Testes e checks
 
@@ -38,7 +38,7 @@ pnpm install --frozen-lockfile
 pnpm run build
 ```
 
-Resultado esperado: Maven informa `BUILD SUCCESS`, sem falhas de teste, e o Vite informa `built` sem erro. Para encerrar os servicos, use `docker compose down`.
+Resultado esperado: Maven informa `BUILD SUCCESS`, sem falhas de teste, e o Next.js conclui `next build` sem erro. Para encerrar os servicos, use `docker compose down`.
 
 ## Atualizar o GitHub
 
@@ -79,7 +79,7 @@ A skill fica em `.codex/skills/solid/SKILL.md` e deve citar o codigo real, respe
 
 ## Deploy
 
-A Vercel publica apenas o frontend Vite usando `vercel.json`. O backend Spring Boot precisa de uma hospedagem Java separada; em producao, ele podera usar o PostgreSQL do Supabase por JDBC.
+A Vercel publica apenas o frontend Next.js usando `vercel.json`. O backend Spring Boot precisa de uma hospedagem Java separada; em producao, ele podera usar o PostgreSQL do Supabase por JDBC.
 
 O Supabase ainda nao foi provisionado. Consulte `supabase/README.md` e nao adicione credenciais ao Git.
 

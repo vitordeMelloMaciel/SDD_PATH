@@ -8,7 +8,7 @@
 
 ## Objetivo
 
-Permitir que uma pessoa cadastrada entre com e-mail e senha, mantenha uma sessao segura e saia do sistema. Esta e a primeira fatia vertical: cria o registro de usuario no PostgreSQL, o contrato de autenticacao no backend Spring Boot e a tela de login no frontend Vite.
+Permitir que uma pessoa cadastrada entre com e-mail e senha, mantenha uma sessao segura e saia do sistema. Esta e a primeira fatia vertical: cria o registro de usuario no PostgreSQL, o contrato de autenticacao no backend Spring Boot e a tela de login no frontend Next.js.
 
 ## Regras
 
