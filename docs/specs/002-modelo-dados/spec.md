@@ -1,6 +1,6 @@
 # Spec 002 - Modelo de dados inicial
 
-**Status:** aprovado pelo pedido explicito do operador
+**Status:** implementada e validada por migration e testes de integracao
 
 **Vinculo:** `docs/PRD.md`, itens 1 a 5
 
@@ -39,6 +39,13 @@ Criar por migration Flyway o modelo relacional minimo para usuarios, equipamento
 - Sessao HTTP e politica de provisionamento dos primeiros usuarios.
 - Reserva futura, notificacao e importacao da planilha.
 - Aplicacao da migration em banco remoto.
+
+## Contrato afetado
+
+- Banco: migrations Flyway V1 e V2 criam e protegem as invariantes de `app_user`, `equipment` e `loan`.
+- Backend: passa a poder mapear o modelo, mas endpoints e entidades JPA continuam fora desta spec.
+- Frontend: nenhum contrato funcional; os dados exibidos permanecem demonstrativos.
+- Testes: PostgreSQL descartavel deve aplicar todas as migrations e rejeitar violacoes de CA-02 a CA-07.
 
 ## Decisoes de modelagem
 

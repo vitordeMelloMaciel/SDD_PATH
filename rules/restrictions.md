@@ -32,6 +32,9 @@ alwaysApply: true
 - Configuracao local de deploy, ambiente e migration exige escopo explícito na tarefa.
 - Deploy, segredo ou qualquer alteração em serviço remoto exige autorização explícita no momento da ação.
 - Mudanças de banco começam em migration Flyway local e revisada; nunca use SQL avulso ou editor visual como fonte do schema.
+- Nao invente credencial, senha, token ou chave para preencher configuracao ausente.
+- Nao commite `.env` nem outro arquivo com valor secreto; versione somente `.env.example` sem credenciais reais.
+- Nao envie segredo para GitHub, Vercel, Supabase ou outro servico sem autorizacao explicita do operador.
 
 ## Precedência
 

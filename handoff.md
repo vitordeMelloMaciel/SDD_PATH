@@ -1,15 +1,14 @@
 # Handoff
 
-- Ponto atual: regras consolidadas; ADR-002 registra o design system; Spec 002 e migration V2 do modelo inicial criadas.
-- Criterio em andamento: modelo de dados inicial validado; a Spec 001 de login continua aguardando respostas.
-- Branch: `codex/vercel-deploy`.
-- Alteracoes locais: ADR-002 implementado no frontend Next.js com Tailwind, componentes acessiveis, Phosphor e CSP com nonce.
-- Banco local: Flyway V1 e V2 aplicadas; `app_user`, `equipment` e `loan` confirmadas; nada foi aplicado remotamente.
-- Supabase: projeto e CLI local ainda nao configurados.
-- Publicado: branch `codex/vercel-deploy` vinculada ao GitHub; a Vercel deve usar `frontend` como Root Directory e `frontend/vercel.json` fixa Next.js e pnpm 10.
-- Verificacao: lockfile congelado com pnpm 10, typecheck, build Next.js, CSP de producao e imagem Docker do frontend passaram.
-- Skill: `.codex/skills/solid/SKILL.md` validada e descoberta pelo Codex CLI em modo somente leitura.
-- Execucao local: frontend `http://localhost:5173`, backend `http://localhost:8080`.
-- Nao fazer: nao implementar endpoints ou telas conectadas antes da spec funcional correspondente.
-- Nao fazer: nao publicar, alterar env remoto ou tocar no Supabase remoto sem autorizacao especifica.
-- Proximo passo: fechar as quatro perguntas da Spec 001 antes de implementar login e sessao.
+- Ponto atual: aulas 7 a 9 auditadas; regras, specs, ADRs, design system, skill SOLID e subagente de validacao organizados.
+- Criterio em andamento: AZ-05 voltou a consultar `/health`; Spec 002 esta implementada; Spec 001 aguarda quatro respostas do operador.
+- Branch e base remota: `main`, ultimo commit publicado `5542470`.
+- Alteracoes locais: correcoes desta auditoria ainda nao commitadas nem enviadas ao GitHub.
+- Banco local: Flyway V1 e V2 foram validadas anteriormente; `app_user`, `equipment` e `loan` existem; nada aplicado remotamente.
+- Supabase: projeto e CLI local ainda nao configurados; Spring Boot continua sendo a unica camada de acesso ao banco.
+- Publicado: frontend anterior em `https://sdd-path-pi.vercel.app/`; novas correcoes aguardam push e novo deploy.
+- Frontend: Next.js, Tailwind, ADR-002, componentes acessiveis, Phosphor e CSP com nonce.
+- Agentes: skill em `.agents/skills/solid/SKILL.md`; unico subagente em `.codex/agents/spec-validator.toml`.
+- Verificacao atual: Codex descobriu `$solid`; Docker Desktop estava fechado e impediu repetir testes; instalacao local foi interrompida por demora de rede.
+- Nao fazer: nao implementar login antes de aprovar a Spec 001; nao tocar em segredo, Supabase remoto ou deploy sem autorizacao.
+- Proximo passo: revisar o diff, repetir os checks com Docker aberto, commitar e publicar; depois responder as quatro perguntas da Spec 001.

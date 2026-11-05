@@ -11,11 +11,12 @@ alwaysApply: false
 Ao criar, alterar ou remover tabela, coluna, indice, constraint ou regra de acesso.
 
 ## Procedimento
-1. Confirme que a tarefa ou o plano aprovado descreve o DDL e seus criterios.
-2. Crie uma unica migration Flyway `V<numero>__<nome>.sql` por tarefa.
-3. Explique o efeito sobre dados existentes e como desfazer a mudanca.
-4. Rode `docker compose run --rm backend-test`; Testcontainers deve aplicar todas as migrations em PostgreSQL vazio e descartavel.
-5. Se houver ambiente local ativo, suba-o com `docker compose up -d --build` e confirme `/health`, sem remover volumes sem autorizacao.
+1. Antes de gerar qualquer arquivo, apresente o DDL pretendido, os criterios atendidos e o efeito sobre dados existentes; pare para aprovacao do operador.
+2. Depois da aprovacao, crie uma unica migration Flyway `V<numero>__<nome>.sql` por tarefa.
+3. Explique como a mudanca evolui dados existentes e como seria revertida por uma nova migration.
+4. Garanta que acesso a tabelas novas continue exclusivo ao backend; autenticacao e autorizacao pertencem ao Spring Security conforme ADR-001. RLS do Supabase nao substitui esse contrato.
+5. Rode `docker compose run --rm backend-test`; Testcontainers deve aplicar todas as migrations em PostgreSQL vazio e descartavel.
+6. Se houver ambiente local ativo, suba-o com `docker compose up -d --build` e confirme `/health`, sem remover volumes sem autorizacao.
 
 ## Verificacao
 Um banco vazio aplica todas as migrations e o endpoint `/health` retorna banco `up`.

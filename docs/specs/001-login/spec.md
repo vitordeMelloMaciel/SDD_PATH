@@ -53,3 +53,8 @@ Permitir que uma pessoa cadastrada entre com e-mail e senha, mantenha uma sessao
 4. Havera bloqueio temporario depois de varias tentativas incorretas na v1?
 
 Esta spec nao esta aprovada enquanto as quatro perguntas acima nao forem respondidas. Conforme `rules/spec-flow.md`, `plan.md` e `tasks.md` ainda nao devem ser criados.
+
+## Regras acionadas quando a spec avancar
+
+- `spec-validator` confere PRD, ADRs, criterios e perguntas antes da aprovacao humana; depois da aprovacao, `rules/spec-flow.md` libera plano e tarefas.
+- Mudanca de schema aciona `rules/migration.md`; credenciais e sessao acionam `rules/secrets.md`; implementacao e encerramento acionam `rules/tests.md`, `rules/checks.md` e `rules/handoff.md`.

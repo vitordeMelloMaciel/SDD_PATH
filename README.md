@@ -53,7 +53,7 @@ git push -u origin codex/aulas-7-9
 ```
 
 Depois do push, abra um pull request para `main` no GitHub. Separe mudancas de regras, andar zero e frontend em commits diferentes.
-Inclua `.codex/` no commit da Aula 9 para publicar a skill SOLID junto com o repositorio. O frontend usa somente pnpm e `pnpm-lock.yaml`; nao misture lockfiles de outros gerenciadores.
+Inclua `.agents/` e `.codex/` no commit para publicar a skill SOLID e o subagente validador junto com o repositorio. O frontend usa somente pnpm e `pnpm-lock.yaml`; nao misture lockfiles de outros gerenciadores.
 
 ## Testar o agente e a skill SOLID
 
@@ -75,7 +75,7 @@ Depois invoque a skill explicitamente:
 $solid Revise o backend deste projeto. Nao altere arquivos. Liste apenas violacoes SOLID concretas, com arquivo, linha, risco e a menor correcao util.
 ```
 
-A skill fica em `.codex/skills/solid/SKILL.md` e deve citar o codigo real, respeitar specs e ADRs e evitar abstracoes sem necessidade.
+A skill fica em `.agents/skills/solid/SKILL.md` e deve citar o codigo real, respeitar specs e ADRs e evitar abstracoes sem necessidade. O unico subagente fica em `.codex/agents/spec-validator.toml` e valida specs sem editar arquivos nem substituir a aprovacao humana.
 
 ## Deploy
 

@@ -11,7 +11,7 @@ Use SOLID as a diagnostic tool for this repository, not as a requirement to add 
 
 1. Read `AGENTS.md`, `rules/restrictions.md`, the active spec and its `plan.md` and `tasks.md` when they exist.
 2. Read the relevant Java code and tests before judging the design.
-3. Respect `docs/adr/001-stack.md` and `docs/adr/002-layout.md`. If a proposed correction conflicts with an ADR or requires a new architectural decision, describe it and stop.
+3. Respect `docs/adr/001-stack.md` and `docs/adr/002-design-system.md`. If a proposed correction conflicts with an ADR or requires a new architectural decision, describe it and stop.
 
 ## Review method
 

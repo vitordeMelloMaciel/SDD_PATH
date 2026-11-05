@@ -44,11 +44,21 @@ Time pequeno, prazo curto, nenhum código existente no início do projeto. O ban
 
 ## Alternativas descartadas
 
-- Python com FastAPI — descartada porque acelera protótipo, mas deixaria mais decisões estruturais abertas para a turma neste momento.
-- Vite com TypeScript sem React — descartado porque não atende a composição por componentes, o carregamento de fonte e a CSP definidos no ADR-002.
-- GraphQL — descartado porque a v1 tem recursos simples e não precisa de uma camada extra de contrato.
-- SQL direto — descartado porque espalharia queries e aumentaria o custo de mudança no início.
-- PostgreSQL instalado manualmente — descartado porque tornaria a execução local diferente em cada máquina.
+| item | alternativa | motivo do descarte |
+|---|---|---|
+| linguagem / runtime | Python 3 | reduziria o esqueleto inicial, mas deixaria mais convencoes estruturais abertas e fugiria da stack Java definida pelo time |
+| framework do backend | FastAPI | acelera um prototipo, mas nao oferece o mesmo conjunto integrado de seguranca, persistencia e testes escolhido para este projeto |
+| estilo da API | GraphQL | a v1 possui recursos e consultas simples; uma camada adicional de schema e resolucao nao se paga |
+| front | Vite com TypeScript sem React | nao atende a composicao por componentes e o modelo de renderizacao adotado no design system |
+| como o front e servido | bundle servido pelo Spring Boot | acoplaria os ciclos de deploy do frontend e backend e reduziria a independencia da Vercel |
+| autenticacao | JWT persistido no navegador | aumentaria a exposicao do token a codigo executado no cliente; a sessao HTTP-only reduz essa superficie |
+| autorizacao | RBAC com tabelas de papeis e permissoes | os dois perfis fixos do PRD nao justificam um modelo de permissao dinamico na v1 |
+| acesso ao banco | SQL direto em controllers ou services | espalharia queries, mapeamento e transacoes pelas regras de aplicacao |
+| migrations | schema criado automaticamente pelo ORM | esconderia mudancas de banco e impediria revisao e reproducao deterministica |
+| testes | H2 ou mocks como prova de integracao | nao reproduz constraints, indices parciais e triggers do PostgreSQL real |
+| execucao local | instalacao manual de Java, Node e PostgreSQL | criaria diferencas entre maquinas e passos nao verificaveis pelo mesmo comando |
+| configuracao e segredos | arquivo de configuracao com valores reais versionado | colocaria credenciais no historico Git e misturaria configuracao por ambiente com codigo |
+| banco | MySQL | PostgreSQL ja era uma restricao do projeto e oferece os recursos usados nas invariantes do modelo |
 
 ## Consequências
 

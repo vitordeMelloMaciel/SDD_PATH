@@ -1,6 +1,6 @@
 # Verificacao da Aula 9
 
-Data da ultima auditoria: 2026-10-02.
+Data da ultima auditoria: 2026-11-05.
 
 ## Estado esperado
 
@@ -13,7 +13,9 @@ Data da ultima auditoria: 2026-10-02.
 - [x] `docs/specs/001-login/spec.md` existe como rascunho da primeira fatia vertical.
 - [ ] A Spec 001 esta aprovada e possui `plan.md` e `tasks.md`.
 - [ ] Supabase local/remoto esta provisionado e verificado.
-- [ ] Deploy Vercel esta verde.
+- [x] Deploy Vercel esta verde em `https://sdd-path-pi.vercel.app/`.
+- [x] Skill SOLID esta no caminho de projeto `.agents/skills/solid/SKILL.md` e foi descoberta pelo Codex.
+- [x] O unico subagente do projeto e `spec-validator`, em modo somente leitura.
 
 ## Teste 1 - descoberta das regras
 

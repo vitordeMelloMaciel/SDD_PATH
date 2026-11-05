@@ -15,7 +15,8 @@ O documento de negócio está em docs/PRD.md.
 - rules/handoff.md — como registrar o estado ao encerrar uma tarefa.
 - rules/spec-flow.md — ordem dos artefatos de uma funcionalidade.
 - rules/operacao.md — quem commita, publica e aprova cada tipo de acao.
-- .codex/skills/solid/SKILL.md — revisao e refatoracao Java orientada por SOLID, invocavel com `$solid`.
+- .agents/skills/solid/SKILL.md — revisao e refatoracao Java orientada por SOLID, invocavel com `$solid`.
+- .codex/agents/spec-validator.toml — unico subagente do projeto; valida specs em modo somente leitura.
 - docs/andar-zero.md — critérios do esqueleto técnico inicial.
 - docs/specs/ — uma pasta por funcionalidade, com spec, plano e tarefas. A Spec 001 de login está em elaboração.
 
@@ -24,6 +25,10 @@ O documento de negócio está em docs/PRD.md.
 `rules/restrictions.md` e a fonte unica para limites de autoridade e precedencia.
 Os demais arquivos em `rules/` descrevem somente procedimentos especializados.
 O estado temporario da execucao fica apenas em `handoff.md`.
+
+## Validacao de specs
+
+Depois de redigir ou alterar uma spec, delegue sua validacao ao subagente `spec-validator` antes de pedir aprovacao ao operador ou criar `plan.md`. O subagente apenas aponta bloqueios; a aprovacao continua sendo humana.
 
 ## Mapa atual
 
