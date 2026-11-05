@@ -13,6 +13,11 @@ import { DeadlineProgress, FilterChip, SegmentedControl, StatusPill, type Equipm
 
 type Filter = 'all' | EquipmentStatus;
 
+export type SystemHealth = {
+  healthy: boolean;
+  label: string;
+};
+
 const equipment: EquipmentCardProps[] = [
   { name: 'Dell Latitude 5440', assetCode: 'NOTE-014 · Notebook', category: 'notebook', status: 'available', detail: 'Pronto para retirada' },
   { name: 'LG UltraFine 27', assetCode: 'MON-022 · Monitor', category: 'monitor', status: 'borrowed', detail: 'Com Marina · devolução 30 out.' },
@@ -47,7 +52,7 @@ function SectionHeading({ eyebrow, title, action }: { eyebrow: string; title: st
   );
 }
 
-export function OperationsDashboard() {
+export function OperationsDashboard({ systemHealth }: { systemHealth: SystemHealth }) {
   const [filter, setFilter] = React.useState<Filter>('all');
   const [category, setCategory] = React.useState('Todos');
   const [query, setQuery] = React.useState('');
@@ -76,10 +81,16 @@ export function OperationsDashboard() {
 
   return (
     <AppShell onNewLoan={openLoanDialog}>
-      <section className="grid gap-1" aria-labelledby="overview-title">
-        <span className="text-[10px] uppercase tracking-[0.1em] text-ghost">Sexta-feira, 23 de outubro</span>
-        <h2 id="overview-title" className="text-2xl font-semibold text-foreground">Visão operacional</h2>
-        <p className="max-w-2xl text-[13.5px] leading-5 text-muted">Acompanhe disponibilidade, prazos e itens que precisam de ação da equipe.</p>
+      <section className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start" aria-labelledby="overview-title">
+        <div className="grid gap-1">
+          <span className="text-[10px] uppercase tracking-[0.1em] text-ghost">Sexta-feira, 23 de outubro</span>
+          <h2 id="overview-title" className="text-2xl font-semibold text-foreground">Visão operacional</h2>
+          <p className="max-w-2xl text-[13.5px] leading-5 text-muted">Acompanhe disponibilidade, prazos e itens que precisam de ação da equipe.</p>
+        </div>
+        <div role="status" className="inline-flex min-h-8 items-center gap-2 rounded-[var(--radius-pill)] border border-soft-border bg-sunken px-3 text-xs text-dim">
+          <span aria-hidden="true" className={systemHealth.healthy ? 'size-2 rounded-full bg-available' : 'size-2 rounded-full bg-overdue'} />
+          {systemHealth.label}
+        </div>
       </section>
 
       <RuleNotice title="Regras em vigor">
