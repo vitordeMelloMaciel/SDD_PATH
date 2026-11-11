@@ -12,9 +12,12 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -38,6 +41,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import br.org.germinare.equipamentos.user.UserRole;
 
 @Testcontainers
+@ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = "server.servlet.session.cookie.secure=true"
@@ -128,8 +132,9 @@ class AuthenticationFoundationIntegrationTest {
     }
 
     @Test
-    void ca02Ca04Ca05Ca10LoginSessionAndRepeatedLogoutRequireCsrf() {
+    void ca02Ca04Ca05Ca07Ca10LoginSessionAndRepeatedLogoutRequireCsrf(CapturedOutput output) {
         UUID id = createUser("ativa@example.org", VALID_PASSWORD, "Pessoa Ativa", "colaborador", true);
+        String hash = jdbc.queryForObject("select password_hash from app_user where id = ?", String.class, id);
         var credentials = Map.of("email", "ativa@example.org", "password", VALID_PASSWORD);
         var denied = authRequest(HttpMethod.POST, "/login", new HttpHeaders(), credentials);
         assertThat(denied.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -159,6 +164,10 @@ class AuthenticationFoundationIntegrationTest {
             .isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(authRequest(HttpMethod.POST, "/logout", csrfHeaders(null), null).getStatusCode())
             .isEqualTo(HttpStatus.NO_CONTENT);
+
+        String observableOutput = output.getAll() + login + session + logout;
+        assertThat(observableOutput.contains(VALID_PASSWORD)).as("senha ausente das respostas e dos logs").isFalse();
+        assertThat(observableOutput.contains(hash)).as("hash ausente das respostas e dos logs").isFalse();
     }
 
     @Test
