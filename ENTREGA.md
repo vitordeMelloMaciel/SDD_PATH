@@ -139,6 +139,13 @@ As três rodadas da Spec 001 rodaram pelo Codex CLI, como registra o cabeçalho 
 
 `rules/spec-flow.md` exigia o verificador apenas antes da aprovacao da spec. A pratica mostrou que isso nao garantia uma revisao independente da implementacao. O fluxo agora exige uma segunda rodada, registrada e somente leitura (`b753715`).
 
+O código da Spec 004 foi escrito antes de a spec ser aprovada. São eles: `LoanService.java` e `LoanController.java` no backend, e `loan-journey.tsx`, `loan-api.ts` e as páginas `/catalogo` e `/meus-emprestimos` no frontend. Isso contrariou `rules/restrictions.md`, que proíbe escrever código de funcionalidade sem spec e antes de um plano aprovado. Comparado com a spec aprovada, o código diverge em três pontos:
+- no CA-07, mostra “Emprestado a você” e a data só ao titular, a partir de `myDueAt`;
+- no CA-05, a página de `operacoes` chama a API em vez de mostrar o acesso negado;
+- nos rodapés do card exigidos pelo ADR-002.
+
+Decisão do operador: não commitar nem apagar esse código, mantê-lo fora da `main` e reescrevê-lo pela spec aprovada, uma tarefa por commit. Cada tarefa aproveita só o trecho que atende ao seu CA, já corrigido. Motivo: pela precedência de `rules/restrictions.md`, quando código e spec discordam, a spec prevalece. Commitar o código como estava levaria para a `main` um comportamento que a spec proíbe. O mapeamento por tarefa está no plano (`fdee1f2`), e a rodada que bloqueou o plano está em `f8ef24b`.
+
 ## 8. O que ficou de fora e o que faria diferente
 
 - O login, a sessao e o logout passaram localmente via Next.js, Spring e PostgreSQL descartavel. O commit `e0cbaca` publica a tela e o encaminhamento same-origin. O fluxo ainda precisa da revisao interativa e da verificacao independente final.
