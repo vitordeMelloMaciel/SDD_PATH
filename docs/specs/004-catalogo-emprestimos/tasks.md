@@ -36,19 +36,12 @@ Código local:
 
 Commit sugerido: `feat(catalog): list equipment with six public fields [CA-07,CA-01]`
 
-## T002 · CA-01 e CA-06. `EQUIPMENT_IMAGE_BASE_URL` no ambiente local
+## T002 · Retirada
 
-- [ ] Repassar `EQUIPMENT_IMAGE_BASE_URL` aos serviços `backend` e `frontend` do `docker-compose.yml`, sem valor real.
-- [ ] Acrescentar ao README só as linhas da variável: Railway e Vercel precisam dela, o operador a configura com autorização no momento da ação, e o front exige novo build. Sem o texto local sobre o Render, que contraria o ADR-003.
-- [ ] Conferir localmente: sem a variável, os cards mostram “Foto indisponível”; com ela, a URL é `<base>/equipment/<patrimônio>.jpg`.
-
-Essa extensão de escopo está registrada no plano (proposta 3).
-
-Código local:
-- **Cobre:** o trecho do `next.config.ts`, já na `main` (`d16a3e6`).
-- **Diverge:** o `docker-compose.yml` não repassa a variável, e o README local cita o Render.
-
-Commit sugerido: `chore(catalog): pass equipment image base URL to local services [CA-01,CA-06]`
+Por decisão do operador em 2026-11-11, a T002 foi retirada: a spec não
+ampliou o “Contrato afetado” para `docker-compose.yml` e `README.md`. O
+consumo de `EQUIPMENT_IMAGE_BASE_URL` está na T001. A configuração em
+produção é feita pelo operador, com autorização no momento da ação.
 
 ## T003 · CA-02 e CA-03. API de empréstimos, com 409 e motivo
 
@@ -195,6 +188,6 @@ Commit sugerido: `docs(catalog): record Spec 004 verification [CA-01..CA-07]`
 | `login-page.tsx` (local) | Só o colaborador vai a `/catalogo` | CA-05 | T006 |
 | `loan-journey.tsx` | Sem rodapés “Em manutenção” e “Emprestado”, fundo `bg-sunken`, botão “Solicitar” | CA-01, ADR-002 | T007 |
 | `AuthenticationFoundationIntegrationTest` (local) | Exige `myDueAt` e mistura a Spec 004 com os testes de login | CA-07 | T001, T003 |
-| `README.md` (local) | Instruções de deploy no Render | ADR-003 | T002 |
+| `README.md` (local) | Instruções de deploy no Render e texto sobre o catálogo local | ADR-003 | Nunca entra; o plano não altera o README |
 | `ENTREGA.md` (local) | Texto desatualizado sobre a V3, a V4 e a carga | — | Nunca entra inteiro |
 | `frontend/next.config.ts` | Nenhuma: o trecho já está na `main` (`d16a3e6`) | — | — |

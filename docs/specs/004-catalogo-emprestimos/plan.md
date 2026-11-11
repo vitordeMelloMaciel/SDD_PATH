@@ -1,9 +1,9 @@
 # Plano da Spec 004 — Catálogo e empréstimos
 
-**Estado** · Proposto para aprovação do operador. A rodada `plan-01-c52ae79`
-bloqueou a versão anterior (B-01: acesso ao banco contra o ADR-001; B-02:
-conta desativada ou excluída). Esta revisão corrige os dois bloqueios e
-aguarda nova rodada.
+**Estado** · Aprovado pelo operador em 2026-11-11, depois de `APROVAVEL` na
+rodada `plan-02-ad56229`. A rodada `plan-01-c52ae79` havia bloqueado a
+versão anterior (B-01: acesso ao banco contra o ADR-001; B-02: conta
+desativada ou excluída). As decisões estão em “Decisões do operador”.
 
 ## Objetivo do plano
 
@@ -67,7 +67,7 @@ Specs 002 e 003.
 - O filtro vale para as três rotas da 004 e para `GET /api/auth/session`.
   As páginas consultam esse endpoint no servidor e redirecionam para `/`
   quando recebem 401.
-- **Ponto para a aprovação do operador.** A Spec 001 não define o que
+- **Aprovado pelo operador.** A Spec 001 não define o que
   `GET /api/auth/session` faz quando a conta foi desativada ou excluída
   depois do login. A Spec 004 exige que as páginas redirecionem nesse caso
   (`spec.md:97-99`, CA-05). O filtro passa a responder 401 nesse caso, sem
@@ -109,7 +109,8 @@ estrutura nova.
     catálogo e Meus empréstimos.
 - **Frontend, alterados:** `frontend/components/login-page.tsx` (destino
   após o login) e `frontend/components/equipment-card.tsx` (variante com foto).
-- **Configuração:** `docker-compose.yml` e `README.md` (T002).
+- **Spec 001:** uma linha sobre a sessão de conta desativada ou excluída,
+  em commit próprio, com rodada do verificador.
 
 ## Dependências
 
@@ -152,7 +153,38 @@ local (ordem de bloqueio e classificação dos 409) é reaproveitada sobre
 repositórios JPA. Os diffs locais de `README.md` e `ENTREGA.md` nunca entram
 inteiros: cada commit leva só as linhas da tarefa.
 
-## Propostas para aprovação
+## Decisões do operador (2026-11-11)
+
+O operador aprovou este plano e o `tasks.md` depois da rodada
+`plan-02-ad56229` (`APROVAVEL`), com as decisões abaixo.
+
+- **Sessão de conta desativada ou excluída: aprovada.**
+  `GET /api/auth/session` passa a responder 401. O caso é registrado em uma
+  linha da Spec 001, com nova rodada do verificador, antes da T005.
+- **Rejeição inesperada do banco: aprovada**, conforme o item 1 abaixo.
+- **Evidência do CA-03 na interface: aprovada.**
+  - No navegador local, provoca-se `EQUIPMENT_BORROWED` (duas sessões no
+    mesmo item) e `LOAN_LIMIT` (quarta solicitação).
+  - Provoca-se também `OVERDUE_LOAN`, com um empréstimo vencido preparado
+    no banco **local descartável**, nunca em produção.
+  - `EQUIPMENT_MAINTENANCE` não pode ser provocado pela interface, porque o
+    card não tem ação. Ele fica provado pelo teste HTTP.
+- **Escopo da antiga T002: retirado.** A spec não ampliou o “Contrato
+  afetado”. Por isso o plano não altera `docker-compose.yml` nem
+  `README.md`. Sem a variável no ambiente local, os cards mostram “Foto
+  indisponível”. Em produção, `EQUIPMENT_IMAGE_BASE_URL` é configurada pelo
+  operador no Railway e na Vercel, com autorização no momento da ação.
+- **Conta desativada ou excluída durante o POST:** a spec manda responder
+  401 (`spec.md:77-79`). Depois do bloqueio da conta, a transação confere de
+  novo a existência e o `active` e responde 401, sem criar empréstimo.
+- **Pendentes de revisão do operador, sem bloquear a implementação:**
+  - O `EquipmentCard` ganha a variante com foto como acréscimo, sem quebrar
+    `operations-dashboard.tsx`. Esse componente de demonstração fica fora
+    do escopo e é registrado como pendência.
+  - O quadro das páginas usa “Sair”, e a lista vazia usa “Você não tem
+    empréstimos em aberto.”, como no código local.
+
+## Detalhe das decisões aprovadas
 
 1. **Rejeição inesperada do banco.** Se o banco ainda rejeitar a inserção
    depois da leitura sob bloqueio:
@@ -163,20 +195,15 @@ inteiros: cada commit leva só as linhas da tarefa.
      `{code: "INTERNAL_ERROR", message: "Não foi possível registrar o empréstimo."}`,
      sem criar empréstimo.
 2. **Evidência do CA-03 na interface.** A interface mostra a `message` de
-   qualquer 409 pelo mesmo caminho. No navegador, provoca-se
-   `EQUIPMENT_BORROWED` (duas sessões no mesmo item) e `LOAN_LIMIT` (quarta
-   solicitação). `EQUIPMENT_MAINTENANCE` não pode ser provocado pela
-   interface, porque o card não tem ação. `OVERDUE_LOAN` exige um empréstimo
-   vencido. Esses dois ficam provados pelos testes HTTP, que verificam
-   código e mensagem.
-3. **Escopo da T002.** A T002 repassa a variável no `docker-compose.yml` e
-   a documenta no README para a conferência local. Esses dois arquivos não
-   estão no “Contrato afetado” da spec.
+   qualquer 409 pelo mesmo caminho. No navegador local, provocam-se
+   `EQUIPMENT_BORROWED`, `LOAN_LIMIT` e `OVERDUE_LOAN`, este com um
+   empréstimo vencido preparado no banco local descartável.
+   `EQUIPMENT_MAINTENANCE` fica provado pelo teste HTTP.
 
 ## Sequência
 
 1. API de equipamentos (CA-07, CA-01).
-2. `EQUIPMENT_IMAGE_BASE_URL` no ambiente local (CA-01, CA-06).
+2. (Retirada por decisão do operador.)
 3. API de empréstimos, com os 409 e seus motivos (CA-02, CA-03).
 4. Concorrência (CA-04).
 5. Conta ativa, papel e CSRF nas rotas e na sessão (CA-05).
