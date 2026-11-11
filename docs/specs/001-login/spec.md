@@ -1,6 +1,6 @@
 # Spec 001 - Login e sessao
 
-**Status:** aprovada pelo operador em 2026-11-10; resultado `APROVAVEL` na rodada 03 do `spec-validator`
+**Status:** aprovada pelo operador em 2026-11-10; resultado `APROVAVEL` na rodada 03 do `spec-validator`. Em 2026-11-11, o operador aprovou uma linha sobre conta desativada ou excluida em `GET /api/auth/session`, validada na rodada 04.
 
 **Vinculo:** `docs/PRD.md`, item 1. A visualizacao dos proprios emprestimos sera coberta pela futura Spec 004.
 
@@ -52,6 +52,7 @@ Permitir que uma pessoa previamente cadastrada entre com e-mail e senha, consult
 
 - Sessao valida 200: `{ "user": { "id": "<uuid>", "fullName": "Nome", "email": "pessoa@exemplo.org", "role": "colaborador" } }`, com o mesmo envelope e os mesmos quatro campos do sucesso de login.
 - Sessao ausente ou expirada 401: `{ "code": "UNAUTHENTICATED", "message": "Sessao invalida ou expirada." }`.
+- Conta desativada ou excluida depois do login: o mesmo 401, com a sessao encerrada e o cookie expirado. Acrescentado em 2026-11-11 por decisao do operador, porque a Spec 004 exige que as paginas redirecionem nesse caso. Nenhum CA desta spec muda.
 - Este endpoint e a rota protegida usada para provar autenticacao. `GET /health`, `GET /api/auth/csrf`, `POST /api/auth/login` e `POST /api/auth/logout` nao exigem sessao; login e logout continuam exigindo CSRF valido.
 
 ### Sair
