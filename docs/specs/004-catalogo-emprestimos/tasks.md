@@ -45,15 +45,15 @@ produção é feita pelo operador, com autorização no momento da ação.
 
 ## T003 · CA-02 e CA-03. API de empréstimos, com 409 e motivo
 
-- [ ] Entidade `Loan`, `LoanRepository` e busca com `@Lock(PESSIMISTIC_WRITE)` em `AppUserRepository` e `EquipmentRepository`.
-- [ ] `POST /api/loans` (`equipmentId` UUID):
+- [x] Entidade `Loan`, `LoanRepository` e busca com `@Lock(PESSIMISTIC_WRITE)` em `AppUserRepository` e `EquipmentRepository`.
+- [x] `POST /api/loans` (`equipmentId` UUID):
   - bloqueia a conta e depois o equipamento na mesma transação;
   - classifica a recusa na ordem da V2: 409 `EQUIPMENT_MAINTENANCE`, `EQUIPMENT_BORROWED`, `LOAN_LIMIT` ou `OVERDUE_LOAN`, com a mensagem da spec;
   - salva o `Loan` sem `dueAt` e lê `loanedAt` e `dueAt` com `refresh`;
   - devolve 201 com a representação de Meus empréstimos.
-- [ ] 400 `INVALID_REQUEST` para JSON inválido, UUID ausente ou inválido, ou `Content-Type` diferente de JSON. 404 `EQUIPMENT_NOT_FOUND` para UUID inexistente.
-- [ ] `GET /api/loans/me`: empréstimos abertos do principal, ordenados por vencimento e ID, com `dueAt` em ISO 8601 com offset e `overdue`.
-- [ ] Testes com PostgreSQL real:
+- [x] 400 `INVALID_REQUEST` para JSON inválido, UUID ausente ou inválido, ou `Content-Type` diferente de JSON. 404 `EQUIPMENT_NOT_FOUND` para UUID inexistente.
+- [x] `GET /api/loans/me`: empréstimos abertos do principal, ordenados por vencimento e ID, com `dueAt` em ISO 8601 com offset e `overdue`.
+- [x] Testes com PostgreSQL real:
   - cada recusa 409, com código e mensagem, sem inserir empréstimo;
   - os casos 400 (incluindo o `Content-Type` errado) e 404;
   - 201 com `due_at = loaned_at + interval '14 days'` e status `emprestado`, posto pela trigger.
