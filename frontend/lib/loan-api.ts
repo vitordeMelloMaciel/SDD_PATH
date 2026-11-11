@@ -19,6 +19,15 @@ export type Equipment = {
   imageUrl: string | null;
 };
 
+/** Item de `GET /api/loans/me` (Spec 004). */
+export type Loan = {
+  id: string;
+  assetCode: string;
+  equipmentName: string;
+  dueAt: string;
+  overdue: boolean;
+};
+
 export type PageGate =
   | { kind: 'collaborator'; user: SessionUser; sessionCookie: string }
   | { kind: 'denied' }

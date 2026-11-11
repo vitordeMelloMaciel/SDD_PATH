@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState, type ReactNode } from 'react';
-import type { Equipment } from '@/lib/loan-api';
+import type { Equipment, Loan } from '@/lib/loan-api';
 import { EquipmentPhotoCard } from './equipment-card';
 import { Button } from './ui/button';
 
+const dueDates = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' });
 const cardStatus = { disponivel: 'available', emprestado: 'borrowed', manutencao: 'maintenance' } as const;
 
 type Page = 'catalogo' | 'meus-emprestimos';
@@ -121,6 +122,26 @@ export function Catalog({ equipment }: { equipment: Equipment[] }) {
       )}
       <p className="mt-6 text-xs text-borrowed"><a href="https://pixabay.com/" className="underline">Fotos: Pixabay</a></p>
     </>
+  );
+}
+
+/** Meus empréstimos (Spec 004, CA-02 e CA-05): só os abertos da própria conta, com a devolução no fuso aprovado. */
+export function MyLoans({ loans }: { loans: Loan[] }) {
+  if (loans.length === 0) return <p className="text-borrowed">Você não tem empréstimos em aberto.</p>;
+  return (
+    <ul className="grid gap-3">
+      {loans.map((loan) => (
+        <li key={loan.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-card-border bg-surface p-4">
+          <div className="grid gap-1">
+            <strong className="text-[14.5px] font-semibold">{loan.equipmentName}</strong>
+            <span className="text-xs text-dim">{loan.assetCode}</span>
+          </div>
+          <p className={loan.overdue ? 'text-overdue' : 'text-borrowed'}>
+            {loan.overdue ? 'Em atraso · ' : ''}Devolução em <time dateTime={loan.dueAt}>{dueDates.format(new Date(loan.dueAt))}</time>
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }
 

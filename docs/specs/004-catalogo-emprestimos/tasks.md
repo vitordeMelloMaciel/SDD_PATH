@@ -149,7 +149,7 @@ Commit sugerido: `feat(catalog): render equipment cards with photo variant [CA-0
 
 ## T008 · CA-02 e CA-05 (interface). Meus empréstimos
 
-- [ ] Listar os empréstimos abertos com patrimônio, nome e devolução em `America/Sao_Paulo`, com destaque para atraso e mensagem para a lista vazia.
+- [x] Listar os empréstimos abertos com patrimônio, nome e devolução em `America/Sao_Paulo`, com destaque para atraso e mensagem para a lista vazia.
 - [ ] Conferência no navegador: depois de uma solicitação, o item aparece com a data esperada, e outra conta não o vê.
 
 Código local:
