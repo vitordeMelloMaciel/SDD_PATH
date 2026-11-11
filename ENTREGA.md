@@ -12,9 +12,9 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 
 | Requisito do HTML | Estado e evidência |
 | --- | --- |
-| Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; três rodadas de pré-aprovação registradas na Spec 001. A verificação final e a prova com erro plantado seguem pendentes. |
+| Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (duas) e 004 (rodadas 05 e 06). A verificação final e a prova com erro plantado seguem pendentes. |
 | Skill de imagens | API da Pixabay e busca em lotes executadas. Quatro fotos aprovadas, oito pendentes. Commits `ad2d9af` e `9277a10`. |
-| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada e plano versionado. Migration, manifesto completo, upload e conta de avaliação em produção pendentes. |
+| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 `APROVAVEL` na rodada `pre-approval-02-94a8197` (`a726f85`), aguardando reaprovação do operador e reconfirmação de `plan.md` e `tasks.md`. Migration, manifesto completo, upload e conta de avaliação em produção pendentes. |
 | Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. A Spec 004 aguarda a decisão sobre privacidade do card. Catálogo, API e jornada da prática pendentes. |
 | Entrega e link de produção | Tela de login publicada. Fluxo local validado com conta descartável. A API pública ainda retorna 404, por isso a jornada de produção e a tag final seguem pendentes. |
 
@@ -41,13 +41,26 @@ dos logs e respostas (`77dfd30`).
 | Skill de imagens | Como impedir duplicidade e provar tamanho | Instrucao manual; validacao automatica | Validar IDs, hashes e dimensoes no script | Requisito verificavel nao deve depender de memoria | `ad2d9af` |
 | Skill de imagens | Como repetir o upload sem criar novos objetos | Nome aleatorio; ID da foto; patrimonio | Usar `equipment/<patrimonio>.jpg` | O patrimonio e unico e gera uma chave estavel | `ad2d9af` |
 | Skill de imagens | Como eliminar pessoa, marca, texto e tela | Apenas filtro da API; revisao humana | `safesearch` mais revisao visual bloqueante | A API nao prova os quatro requisitos visuais | `ad2d9af` |
-| Empréstimo (Spec 004) | O PRD diz "14 dias" sem dizer se são corridos ou úteis; o briefing pedia 14 dias úteis | Dias corridos (a V2 já calcula `loaned_at + interval '14 days'`); dias úteis (exige calendário de feriados, função própria e nova migration substituindo o cálculo da V2) | 14 dias corridos, por decisão do operador | A V2 já calcula assim e o projeto não tem calendário de feriados | Spec 004, CA-02 |
+| Empréstimo (Spec 004) | O PRD diz "14 dias" sem dizer se são corridos ou úteis; o briefing pedia 14 dias úteis | Dias corridos (a V2 já calcula `loaned_at + interval '14 days'`); dias úteis (exige calendário de feriados, função própria e nova migration substituindo o cálculo da V2) | 14 dias corridos, por decisão do operador | A V2 já calcula assim e o projeto não tem calendário de feriados | `0e6efea` |
+| Catálogo (Spec 004) | O ADR-002 previa pessoa e devolução no card emprestado; o PRD diz que cada pessoa vê os próprios empréstimos | Pessoa e data para todos; "Emprestado a você" e data só ao titular; somente "Emprestado" para todos | Somente "Emprestado" para todas as contas, inclusive o titular; exceção registrada no ADR-002 e teste de privacidade CA-07 | Opção mais restrita: a API do catálogo não expõe dono nem datas, e o titular vê o vencimento em Meus empréstimos | `212f0f8` |
+| Dados iniciais (Spec 003) | Onde e como a repetição da carga é provada | Só no teste; também em produção via `flyway migrate`; também em produção reexecutando o arquivo versionado | Testcontainers reexecuta a V4 do classpath; em produção o operador roda `psql --single-transaction -f` no mesmo arquivo versionado, sem `BEGIN/COMMIT` no arquivo | Prova a idempotência no banco real sem SQL avulso e sem alterar o checksum do Flyway | `a726f85` |
+| Dados iniciais (Spec 003) | Onde fica a evidência de CA-02 a CA-05 | Só no ENTREGA.md; arquivos na pasta da spec | Teste em `backend/src/test/java/`; ações de produção em `verification/producao-<data>.md`; manifesto e aprovações em `verification/manifesto/` | A evidência fica junto da spec e pode ser comparada entre rodadas | `a726f85` |
 | Login | Provisionamento, duracao de sessao, usuario inativo e tentativas incorretas | Registradas na Spec 001 | Provisionamento administrativo idempotente; sessao de 8 h por inatividade; inativo indistinguivel de credencial invalida; sem bloqueio na v1; conta de teste separada | Fecha as lacunas sem versionar segredo nem inventar regra de negocio | `052dc17` |
 | Dados iniciais | Como repetir a carga e tratar patrimonio existente | Ignorar colisao, sobrescrever ou recusar divergencia | Proposta na Spec 003. Preservar identidade e estado operacional, preencher chave ausente e recusar divergencia em transacao unica | Evita duplicatas e impede que a carga desfaça emprestimos ou troque fotos ja associadas | Rascunho em `docs/specs/003-dados-iniciais/spec.md` |
 
 ## 2. Onde o agente tentou decidir pelo operador
 
 Na primeira versao da Spec 001, expressoes como "erro generico", "sessao expirada" e "provisionamento idempotente" deixavam contratos importantes para quem implementasse. O `spec-validator` bloqueou essa delegacao: a spec passou a definir status, corpos, cookies, semantica das 8 horas, variaveis e comportamento de repeticao. A escolha de produto continuou com o operador; o agente apenas transformou as respostas aprovadas em criterios observaveis.
+
+Nas Specs 003 e 004, o agente voltou a avançar sem a decisão do operador. O cabeçalho da Spec 003 afirmava `APROVAVEL` numa rodada `pre-approval-03` com base `e0cbaca`. Essa rodada não existia: o relatório pertencia à Spec 001, e a base era anterior à própria spec. Além disso, `plan.md` e `tasks.md` foram escritos antes de uma rodada válida. A rodada `pre-approval-01` da Spec 003 bloqueou isso, e o cabeçalho foi corrigido (`a726f85`). Na Spec 004, o código local passou a usar uma das opções de privacidade do card antes da decisão. O verificador bloqueou a spec (rodada 05), e o operador escolheu outra opção.
+
+Ao corrigir os bloqueios, o agente propôs detalhes que o operador não tinha pedido. Eles estão nas specs e aguardam confirmação na aprovação:
+- O comando de repetição usa `-v ON_ERROR_STOP=1`, para parar na primeira falha.
+- `image_object_key` fica sem CHECK e sem unicidade.
+- O prefixo `equipment/` tem exatamente as 12 chaves.
+- O contêiner da foto é 4:3 com `object-fit: cover`.
+- Para `operacoes`, a página mostra "Acesso negado" e "Esta área é exclusiva de colaboradores.".
+- O erro `FORBIDDEN` usa a mensagem "Acesso negado.".
 
 ## 3. Uma decisao que merece ou nao um ADR
 
@@ -83,6 +96,8 @@ A Spec 001 passou por tres contextos independentes antes de ser aprovada:
 3. `pre-approval-03-c485d8a.md`: resultado `APROVAVEL`, sem bloqueio e sem criterio nao observavel.
 
 Os relatorios estao em `docs/specs/001-login/verification/`. A spec aprovada foi publicada no commit `052dc17`. A verificacao pos-implementacao e a prova com erro plantado permanecem pendentes.
+
+A Spec 003 foi bloqueada na rodada `pre-approval-01-94a8197`. O estado citava uma rodada inexistente, e o CA-02 não definia o ambiente nem o mecanismo da repetição. A rodada `pre-approval-02-94a8197` retornou `APROVAVEL`. A Spec 004 foi bloqueada na rodada `pre-approval-05-94a8197` por três motivos: spec divergente do ADR-002 no card emprestado, falta de contrato e de CA de privacidade, e estado contraditório. A rodada `pre-approval-06-94a8197` retornou `APROVAVEL`. Os relatórios estão nas pastas `verification/` de cada spec. Essas rodadas foram feitas por subagente Claude Code em contexto limpo, com as instruções do `spec-validator`, porque o Codex CLI não estava disponível.
 
 ## 7. Uma regra que a pratica pos a prova
 
