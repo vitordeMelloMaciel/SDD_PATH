@@ -12,10 +12,10 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 
 | Requisito do HTML | Estado e evidência |
 | --- | --- |
-| Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (duas) e 004 (rodadas 05 e 06). A verificação final e a prova com erro plantado seguem pendentes. |
+| Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (três) e 004 (rodadas 05 a 07). A verificação final e a prova com erro plantado seguem pendentes. |
 | Skill de imagens | API da Pixabay e busca em lotes executadas. Quatro fotos aprovadas, oito pendentes. Commits `ad2d9af` e `9277a10`. |
-| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 `APROVAVEL` na rodada `pre-approval-02-94a8197` (`a726f85`), aguardando reaprovação do operador e reconfirmação de `plan.md` e `tasks.md`. Migration, manifesto completo, upload e conta de avaliação em produção pendentes. |
-| Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. A Spec 004 aguarda a decisão sobre privacidade do card. Catálogo, API e jornada da prática pendentes. |
+| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. A V4 ainda não foi aprovada. Migration, manifesto completo, upload e conta de avaliação em produção pendentes. |
+| Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. Spec 004 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-07-8d40630` (`b0046fa`); plano e tarefas pendentes. Catálogo, API e jornada da prática pendentes. |
 | Entrega e link de produção | Tela de login publicada. Fluxo local validado com conta descartável. A API pública ainda retorna 404, por isso a jornada de produção e a tag final seguem pendentes. |
 
 Os oito testes de autenticação passaram no Docker, incluindo os casos de CSRF
@@ -30,8 +30,8 @@ dos logs e respostas (`77dfd30`).
 | Usar Pexels | Correcao posterior do operador em 2026-11-10: a fonte da pratica e Pixabay | Usar exclusivamente a Pixabay API | A decisao mais recente do operador corrige o material desatualizado | `.agents/skills/imagens-equipamentos/` | `ad2d9af` |
 | Instalar `sharp` diretamente | `rules/restrictions.md` exige aprovacao para nova dependencia | Dependencia aprovada pelo operador, isolada na skill e fixada por lockfile | Garante 800x600 de forma reproduzivel sem contaminar o runtime da aplicacao | `scripts/package.json`, `scripts/pnpm-lock.yaml` | `ad2d9af` |
 | Gravar a senha padrao no seed | `rules/secrets.md` e o principio de nao versionar credenciais | A senha chega por variavel de ambiente e e persistida como hash | Evita segredo em codigo e historico Git | `.env.example`, comando `backend-provision` e `UserProvisioningIntegrationTest` | `a5a6f1d` |
-| Permitir 5 emprestimos abertos | `docs/PRD.md` limita a 3 | Manter o limite de 3 | O PRD continua sendo a fonte de regra de negocio | Spec de emprestimo ainda pendente | pendente |
-| Esconder todo credito no catalogo | Contrato da API exige indicar a origem | Exibir `Fotos: Pixabay` de forma discreta, sem rodape de card | Cumpre a fonte sem poluir cada item | Spec de catalogo ainda pendente | pendente |
+| Permitir 5 emprestimos abertos | `docs/PRD.md` limita a 3 | Manter o limite de 3 | O PRD continua sendo a fonte de regra de negocio | Spec 004 e V2 (`open_loan_count >= 3`) | `212f0f8` |
+| Esconder todo credito no catalogo | Contrato da API exige indicar a origem | Exibir `Fotos: Pixabay` de forma discreta, sem rodape de card | Cumpre a fonte sem poluir cada item | Spec 004 (jornada) | `212f0f8` |
 | Texto dizia dois itens em manutencao, mas a lista marcava tres | O proprio briefing era contraditorio | `TI-0004`, `TI-0007` e `TI-0010` ficam em manutencao | A lista declarada como exata e a decisao explicita do operador prevalecem | `references/equipment.json` | `ad2d9af` |
 
 ## 1b. Lacunas: o que foi pedido de forma incompleta
@@ -45,8 +45,12 @@ dos logs e respostas (`77dfd30`).
 | Catálogo (Spec 004) | O ADR-002 previa pessoa e devolução no card emprestado; o PRD diz que cada pessoa vê os próprios empréstimos | Pessoa e data para todos; "Emprestado a você" e data só ao titular; somente "Emprestado" para todos | Somente "Emprestado" para todas as contas, inclusive o titular; exceção registrada no ADR-002 e teste de privacidade CA-07 | Opção mais restrita: a API do catálogo não expõe dono nem datas, e o titular vê o vencimento em Meus empréstimos | `212f0f8` |
 | Dados iniciais (Spec 003) | Onde e como a repetição da carga é provada | Só no teste; também em produção via `flyway migrate`; também em produção reexecutando o arquivo versionado | Testcontainers reexecuta a V4 do classpath; em produção o operador roda `psql --single-transaction -f` no mesmo arquivo versionado, sem `BEGIN/COMMIT` no arquivo | Prova a idempotência no banco real sem SQL avulso e sem alterar o checksum do Flyway | `a726f85` |
 | Dados iniciais (Spec 003) | Onde fica a evidência de CA-02 a CA-05 | Só no ENTREGA.md; arquivos na pasta da spec | Teste em `backend/src/test/java/`; ações de produção em `verification/producao-<data>.md`; manifesto e aprovações em `verification/manifesto/` | A evidência fica junto da spec e pode ser comparada entre rodadas | `a726f85` |
+| Catálogo (Spec 004) | O ADR-002 desenhava o card com ícone e sem foto, e não fixava o texto do card em manutenção | Card com foto como exceção só na spec; variante explícita no ADR-002. Para manutenção: texto da situação com previsão de retorno ou só o estado | Variante com foto registrada no ADR-002 (4:3, `--gradient-equipment`, “Foto indisponível”). Rodapé de manutenção somente “Em manutenção”, sem previsão | Spec e ADR não podem discordar, então registrar no ADR é mais barato. Não há dado de previsão de retorno para mostrar | `b0046fa` |
+| Catálogo (Spec 004) | O CA-05 não provava o destino de `operacoes` após o login | Deixar para o plano; incluir no CA-05 | O CA-05 prova que `operacoes` entra, chega a `/catalogo` e vê o acesso negado | Deixa o critério observável | `b0046fa` |
+| Dados iniciais (Spec 003) | Se o nome do revisor das fotos pode ir para o Git | Anonimizar; versionar nome e e-mail; versionar só o nome | Versionar só o nome, sem e-mail | É a evidência da revisão visual que o enunciado pede | `42acd95` |
+| Dados iniciais (Spec 003) | Qual spec implementa `EQUIPMENT_IMAGE_BASE_URL` | Spec 003; Spec 004 | Spec 003 (T006, CA-04); a 004 só consome a URL | É a 003 que define o bucket e as chaves | `42acd95` |
 | Login | Provisionamento, duracao de sessao, usuario inativo e tentativas incorretas | Registradas na Spec 001 | Provisionamento administrativo idempotente; sessao de 8 h por inatividade; inativo indistinguivel de credencial invalida; sem bloqueio na v1; conta de teste separada | Fecha as lacunas sem versionar segredo nem inventar regra de negocio | `052dc17` |
-| Dados iniciais | Como repetir a carga e tratar patrimonio existente | Ignorar colisao, sobrescrever ou recusar divergencia | Proposta na Spec 003. Preservar identidade e estado operacional, preencher chave ausente e recusar divergencia em transacao unica | Evita duplicatas e impede que a carga desfaça emprestimos ou troque fotos ja associadas | Rascunho em `docs/specs/003-dados-iniciais/spec.md` |
+| Dados iniciais | Como repetir a carga e tratar patrimonio existente | Ignorar colisao, sobrescrever ou recusar divergencia | Aprovada na Spec 003. Preservar identidade e estado operacional, preencher chave ausente e recusar divergencia em transacao unica | Evita duplicatas e impede que a carga desfaça emprestimos ou troque fotos ja associadas | `a726f85`, `42acd95` |
 
 ## 2. Onde o agente tentou decidir pelo operador
 
@@ -54,7 +58,7 @@ Na primeira versao da Spec 001, expressoes como "erro generico", "sessao expirad
 
 Nas Specs 003 e 004, o agente voltou a avançar sem a decisão do operador. O cabeçalho da Spec 003 afirmava `APROVAVEL` numa rodada `pre-approval-03` com base `e0cbaca`. Essa rodada não existia: o relatório pertencia à Spec 001, e a base era anterior à própria spec. Além disso, `plan.md` e `tasks.md` foram escritos antes de uma rodada válida. A rodada `pre-approval-01` da Spec 003 bloqueou isso, e o cabeçalho foi corrigido (`a726f85`). Na Spec 004, o código local passou a usar uma das opções de privacidade do card antes da decisão. O verificador bloqueou a spec (rodada 05), e o operador escolheu outra opção.
 
-Ao corrigir os bloqueios, o agente propôs detalhes que o operador não tinha pedido. Eles estão nas specs e aguardam confirmação na aprovação:
+Ao corrigir os bloqueios, o agente propôs detalhes que o operador não tinha pedido. Eles estão nas specs, que o operador aprovou em 2026-11-11. O contêiner 4:3 virou a variante com foto do ADR-002:
 - O comando de repetição usa `-v ON_ERROR_STOP=1`, para parar na primeira falha.
 - `image_object_key` fica sem CHECK e sem unicidade.
 - O prefixo `equipment/` tem exatamente as 12 chaves.
@@ -64,7 +68,13 @@ Ao corrigir os bloqueios, o agente propôs detalhes que o operador não tinha pe
 
 ## 3. Uma decisao que merece ou nao um ADR
 
-Pendente. A adocao do Supabase Storage veio como requisito da pratica; a hospedagem do backend Spring em producao ainda e uma decisao arquitetural aberta e sera avaliada antes do deploy.
+O operador escolheu o Railway para hospedar o backend Spring, registrado no
+[ADR-003](docs/adr/003-hospedagem-backend.md) (`aa8e0b2`). O Railway faz o build do `Dockerfile` de
+`backend/`, serve HTTPS e vira `INTERNAL_API_BASE_URL` na Vercel. Render gratuito
+(dorme e demora a acordar), Fly.io e Cloud Run (exigem cartão) foram descartados.
+O crédito limitado do Railway pode parar o backend depois do prazo. Nenhuma
+credencial fica no repositório. A criação do serviço e o deploy seguem pendentes
+e exigem autorização do operador no momento da ação.
 
 ## 4. A skill imagens-equipamentos
 
@@ -98,6 +108,8 @@ A Spec 001 passou por tres contextos independentes antes de ser aprovada:
 Os relatorios estao em `docs/specs/001-login/verification/`. A spec aprovada foi publicada no commit `052dc17`. A verificacao pos-implementacao e a prova com erro plantado permanecem pendentes.
 
 A Spec 003 foi bloqueada na rodada `pre-approval-01-94a8197`. O estado citava uma rodada inexistente, e o CA-02 não definia o ambiente nem o mecanismo da repetição. A rodada `pre-approval-02-94a8197` retornou `APROVAVEL`. A Spec 004 foi bloqueada na rodada `pre-approval-05-94a8197` por três motivos: spec divergente do ADR-002 no card emprestado, falta de contrato e de CA de privacidade, e estado contraditório. A rodada `pre-approval-06-94a8197` retornou `APROVAVEL`. Os relatórios estão nas pastas `verification/` de cada spec. Essas rodadas foram feitas por subagente Claude Code em contexto limpo, com as instruções do `spec-validator`, porque o Codex CLI não estava disponível.
+
+Depois das respostas do operador às perguntas das rodadas, as duas specs mudaram e passaram por nova rodada: `pre-approval-03-8d40630` na Spec 003 e `pre-approval-07-8d40630` na Spec 004, ambas `APROVAVEL`. O operador aprovou as duas specs em 2026-11-11. Na 003, aprovou também `plan.md`, `tasks.md` e o DDL da V3 (`42acd95`, `b0046fa`).
 
 ## 7. Uma regra que a pratica pos a prova
 
