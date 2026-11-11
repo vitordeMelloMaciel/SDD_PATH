@@ -1,9 +1,11 @@
 # Spec 004 — Catálogo e empréstimos
 
-**Estado** · Em revisão de pré-aprovação. A rodada `pre-approval-05-94a8197`
-retornou `BLOQUEADA`; os bloqueios foram tratados nesta versão e aguardam nova
-rodada. Decisões do operador incorporadas em 2026-11-11: privacidade do card
-emprestado e prazo em dias corridos. Ainda não há `plan.md` nem `tasks.md`.
+**Estado** · Aprovada pelo operador em 2026-11-11, após `APROVAVEL` na rodada
+`pre-approval-07-8d40630`. Decisões do operador incorporadas em 2026-11-11:
+privacidade do card emprestado, prazo em dias corridos, variante do card com
+foto, rodapé “Em manutenção”, prova do acesso negado após o login de
+`operacoes` e `EQUIPMENT_IMAGE_BASE_URL` implementada pela Spec 003.
+Ainda não há `plan.md` nem `tasks.md`.
 
 **Referências** · PRD itens 1–3, ADRs 001 e 002, Specs 001–003 e briefing
 de solicitação da prática.
@@ -105,8 +107,10 @@ manteve três empréstimos e 14 dias corridos (ENTREGA.md, seções 1 e 1b).
 - O contêiner da foto tem proporção 4:3 em todos os cards. A foto preenche
   o contêiner sem distorção (`object-fit: cover`). Para `imageUrl` nulo ou
   falha de carregamento, o mesmo contêiner mostra “Foto indisponível”.
+  Essa é a variante com foto do EquipmentCard registrada no ADR-002.
 - Disponível: rodapé “Solicitar →”, conforme ADR-002.
-- Manutenção: sem ação; rodapé informa a situação.
+- Manutenção: sem ação; rodapé mostra somente “Em manutenção”, sem
+  previsão de retorno.
 - Emprestado: sem ação; rodapé mostra somente “Emprestado”, para todas as
   contas, inclusive a do titular. O card não mostra pessoa nem data de
   devolução. O titular consulta o vencimento em Meus empréstimos. Esta é a
@@ -126,13 +130,17 @@ manteve três empréstimos e 14 dias corridos (ENTREGA.md, seções 1 e 1b).
 
 | ID | Evidência esperada |
 | --- | --- |
-| CA-01 | Conta de teste entra pelo Next.js, é levada a `/catalogo` e vê os 12 itens com situação correta. As 12 fotos carregam em contêiner 4:3 com `object-fit: cover`, e o crédito único leva à Pixabay. Foto ausente ou falha mostra “Foto indisponível” no mesmo contêiner. Somente disponíveis têm ação de solicitar. |
+| CA-01 | Conta de teste entra pelo Next.js, é levada a `/catalogo` e vê os 12 itens com situação correta. As 12 fotos carregam em contêiner 4:3 com `object-fit: cover`, e o crédito único leva à Pixabay. Foto ausente ou falha mostra “Foto indisponível” no mesmo contêiner. Somente disponíveis têm ação de solicitar. Os três itens em manutenção mostram o rodapé “Em manutenção”, sem data nem previsão de retorno. |
 | CA-02 | Solicitação válida retorna 201. No PostgreSQL, `due_at` equivale a `loaned_at + interval '14 days'`. O item muda de situação no catálogo e aparece em Meus empréstimos com a data no fuso aprovado. |
 | CA-03 | As quatro recusas 409 retornam os códigos acima, mostram o motivo na interface e não inserem empréstimo. JSON inválido ou UUID ausente/inválido retorna 400. UUID válido inexistente retorna 404. |
 | CA-04 | Em PostgreSQL real, duas solicitações concorrentes ao mesmo item produzem um 201, um 409 `EQUIPMENT_BORROWED` e um empréstimo aberto. Com dois empréstimos já abertos na mesma conta, duas solicitações concorrentes a itens distintos produzem um 201, um 409 `LOAN_LIMIT` e três empréstimos abertos ao final. |
-| CA-05 | Meus empréstimos exclui itens encerrados e de outras contas. Cada rota prova 401 sem sessão e 403 `FORBIDDEN` (“Acesso negado.”) para `operacoes`. Acesso direto às duas páginas sem sessão redireciona a `/`. Para `operacoes`, as páginas mostram “Acesso negado” e “Esta área é exclusiva de colaboradores.”, sem lista e sem chamadas às rotas da API. Os testes do POST usam CSRF válido para provar 401 ou 403 de autorização. Token ausente ou inválido retorna 403 `CSRF_INVALID` com e sem sessão. Para conta desativada ou excluída, cada rota rejeita a sessão, as páginas redirecionam, não é criado empréstimo e uma consulta posterior com o cookie antigo retorna 401. |
+| CA-05 | Meus empréstimos exclui itens encerrados e de outras contas. Cada rota prova 401 sem sessão e 403 `FORBIDDEN` (“Acesso negado.”) para `operacoes`. Acesso direto às duas páginas sem sessão redireciona a `/`. Para `operacoes`, as páginas mostram “Acesso negado” e “Esta área é exclusiva de colaboradores.”, sem lista e sem chamadas às rotas da API. Uma conta `operacoes` que entra pelo Next.js é levada a `/catalogo` e vê esse mesmo estado de acesso negado. Os testes do POST usam CSRF válido para provar 401 ou 403 de autorização. Token ausente ou inválido retorna 403 `CSRF_INVALID` com e sem sessão. Para conta desativada ou excluída, cada rota rejeita a sessão, as páginas redirecionam, não é criado empréstimo e uma consulta posterior com o cookie antigo retorna 401. |
 | CA-06 | O operador entra em produção com conta de teste, confere as 12 fotos e a ausência da ação de solicitar em itens em manutenção, solicita item disponível, confirma status emprestado e data em Meus empréstimos e prova recusa ao atingir três. Uma consulta de leitura confirma zero empréstimos abertos ou encerrados para o professor na entrega. |
 | CA-07 | Com a conta A titular de um empréstimo aberto e a conta B sem empréstimos, `GET /api/equipment` devolve para A e para B o mesmo objeto para o item emprestado. O objeto tem exatamente os seis campos do contrato, com `status` `emprestado`. Nenhum valor da resposta contém e-mail, nome, ID de usuário, ID de empréstimo, `loaned_at` ou `due_at` de A. No navegador, o card desse item mostra apenas “Emprestado” para A e para B, sem nome e sem data. |
+
+## Perguntas em aberto
+
+Nenhuma pergunta de negócio pendente.
 
 ## Riscos conhecidos
 

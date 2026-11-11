@@ -243,7 +243,8 @@ Estados definidos: vazio, preenchido, foco e desabilitado. A mensagem pertence �
 - Nome em 14.5px/600 e metadado em 12px.
 - Disponível: clicável, rodapé “Solicitar →” e hover de borda `#3C5DBE`.
 - Emprestado: sem hover; rodapé mostra somente “Emprestado”, sem pessoa nem devolução, para todas as contas. Exceção de privacidade decidida pelo operador em 2026-11-11 (Spec 004); o layout de referência previa pessoa e devolução.
-- Manutenção: sem hover; rodapé informa a situação da assistência.
+- Manutenção: sem hover; rodapé mostra somente “Em manutenção”, sem previsão de retorno. Decisão do operador em 2026-11-11 (Spec 004).
+- Variante com foto (Spec 004, decisão do operador em 2026-11-11): no lugar do ícone de 40px, o card usa um contêiner 4:3 com fundo `--gradient-equipment` e foto com `object-fit: cover`. Sem foto ou com falha de carregamento, o mesmo contêiner mostra “Foto indisponível”.
  
 O card não decide se uma solicitação pode ser feita. Ele apenas representa o estado recebido.
  
@@ -434,7 +435,7 @@ Os arquivos Nocturne `_ds/nocturne-<id>/styles.css` e `_ds_bundle.js` citados no
 | `--border-frame` indicado para input × especificação do Input com `#2B3450` | A regra específica vence: Input usa `--border-strong`; `--border-frame` fica para molduras e chips. |
 | Pill de atraso listada sem fundo próprio | Não existe variante `overdue` de `StatusPill`; atraso usa texto e realce da linha até nova decisão visual. |
 | Rodapé do card emprestado com pessoa e devolução × cada pessoa vê somente os próprios empréstimos (PRD) | Exceção decidida pelo operador em 2026-11-11: o card emprestado mostra somente “Emprestado” para todas as contas. O vencimento do titular aparece apenas em Meus empréstimos (Spec 004, CA-07). |
-| Manutenção “fora do catálogo” × card de manutenção desenhado no catálogo | Não resolvido aqui: é comportamento de produto e precisa ser fechado na spec do catálogo. |
+| Manutenção “fora do catálogo” × card de manutenção desenhado no catálogo | Fechado na Spec 004: itens em manutenção aparecem no catálogo, sem ação de solicitar e com rodapé “Em manutenção”. |
 | Cores repetidas nas descrições dos componentes | Os tokens deste ADR são canônicos; componentes devem referenciar tokens, não copiar valores arbitrários. |
 | Limite de três itens e prazo de 14 dias repetidos no PRD e no layout | O design system apenas representa os valores recebidos; a regra continua pertencendo ao PRD e às specs. |
  
