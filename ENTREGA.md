@@ -6,7 +6,7 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 
 - Repositorio: <https://github.com/vitordeMelloMaciel/SDD_PATH>
 - Producao atual: <https://sdd-path-pi.vercel.app/>
-- Branch de trabalho: `codex/pratica-subagentes`
+- Branch de trabalho: `main` (fluxo direto aprovado pelo operador, com checks e commits separados)
 
 ## 1. Conflitos: o que foi pedido contra o que ja existia
 
@@ -28,11 +28,11 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 | Skill de imagens | Como impedir duplicidade e provar tamanho | Instrucao manual; validacao automatica | Validar IDs, hashes e dimensoes no script | Requisito verificavel nao deve depender de memoria | `ad2d9af` |
 | Skill de imagens | Como repetir o upload sem criar novos objetos | Nome aleatorio; ID da foto; patrimonio | Usar `equipment/<patrimonio>.jpg` | O patrimonio e unico e gera uma chave estavel | `ad2d9af` |
 | Skill de imagens | Como eliminar pessoa, marca, texto e tela | Apenas filtro da API; revisao humana | `safesearch` mais revisao visual bloqueante | A API nao prova os quatro requisitos visuais | `ad2d9af` |
-| Login | Provisionamento, duracao de sessao, usuario inativo e tentativas incorretas | Registradas na Spec 001 | Aguardando decisao explicita | O PRD nao responde esses pontos | pendente |
+| Login | Provisionamento, duracao de sessao, usuario inativo e tentativas incorretas | Registradas na Spec 001 | Provisionamento administrativo idempotente; sessao de 8 h por inatividade; inativo indistinguivel de credencial invalida; sem bloqueio na v1; conta de teste separada | Fecha as lacunas sem versionar segredo nem inventar regra de negocio | `052dc17` |
 
 ## 2. Onde o agente tentou decidir pelo operador
 
-Pendente. Esta secao registrara um caso real encontrado durante as specs ou a implementacao, sem fabricar evidencia.
+Na primeira versao da Spec 001, expressoes como "erro generico", "sessao expirada" e "provisionamento idempotente" deixavam contratos importantes para quem implementasse. O `spec-validator` bloqueou essa delegacao: a spec passou a definir status, corpos, cookies, semantica das 8 horas, variaveis e comportamento de repeticao. A escolha de produto continuou com o operador; o agente apenas transformou as respostas aprovadas em criterios observaveis.
 
 ## 3. Uma decisao que merece ou nao um ADR
 
@@ -56,7 +56,13 @@ Pendente. A adocao do Supabase Storage veio como requisito da pratica; a hospeda
 
 ## 6. O verificador em acao
 
-Pendente. As rodadas das duas specs e a prova com erro plantado serao registradas em `docs/specs/<spec>/verification/`.
+A Spec 001 passou por tres contextos independentes antes de ser aprovada:
+
+1. `pre-approval-01-c485d8a.md`: bloqueada por seis lacunas, incluindo contratos HTTP indefinidos, sessao ambigua e provisionamento incompleto.
+2. `pre-approval-02-c485d8a.md`: bloqueada por tres lacunas residuais no envelope de sessao, rota de logout e repeticao do ciclo CSRF.
+3. `pre-approval-03-c485d8a.md`: resultado `APROVAVEL`, sem bloqueio e sem criterio nao observavel.
+
+Os relatorios exatos estao em `docs/specs/001-login/verification/`; a spec aprovada foi publicada no commit `052dc17`. A verificacao pos-implementacao e a prova com erro plantado permanecem pendentes porque ainda nao existe implementacao da Spec 001.
 
 ## 7. Uma regra que a pratica pos a prova
 
@@ -64,7 +70,7 @@ Pendente. As rodadas das duas specs e a prova com erro plantado serao registrada
 
 ## 8. O que ficou de fora e o que faria diferente
 
-- Login real, dados iniciais, catalogo, solicitacao e Meus emprestimos ainda nao foram implementados nesta branch.
+- A Spec 001 de login esta aprovada e possui plano e tarefas; login real, dados iniciais, catalogo, solicitacao e Meus emprestimos ainda nao foram implementados.
 - A chave da Pixabay ainda precisa ser configurada localmente pelo operador; ela nunca sera solicitada no chat nem versionada.
 - Nenhuma migration, imagem ou conta foi aplicada ao Supabase de producao.
 - Docker Desktop estava fechado na auditoria inicial; os testes integrados serao repetidos antes de qualquer spec ser declarada pronta.

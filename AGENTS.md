@@ -19,7 +19,7 @@ O documento de negócio está em docs/PRD.md.
 - .agents/skills/imagens-equipamentos/SKILL.md — prepara imagens de equipamentos exclusivamente pela Pixabay, sem publicar em producao.
 - .codex/agents/spec-validator.toml — unico subagente do projeto; valida specs e confere implementacoes em modo somente leitura.
 - docs/andar-zero.md — critérios do esqueleto técnico inicial.
-- docs/specs/ — uma pasta por funcionalidade, com spec, plano e tarefas. A Spec 001 de login está em elaboração.
+- docs/specs/ — uma pasta por funcionalidade, com spec, plano e tarefas. A Spec 001 de login esta aprovada e aguarda aprovacao do plano de implementacao.
 
 ## Autoridade
 
