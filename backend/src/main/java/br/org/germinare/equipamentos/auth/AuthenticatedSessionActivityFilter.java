@@ -28,7 +28,8 @@ class AuthenticatedSessionActivityFilter extends OncePerRequestFilter {
     private final Duration idleTimeout;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final SessionCookieService sessionCookieService;
-    private final RequestMatcher publicRequest = new OrRequestMatcher(
+    /** Rotas públicas da Spec 001, também usadas pelo ActiveAccountFilter (Spec 004). */
+    static final RequestMatcher PUBLIC_REQUESTS = new OrRequestMatcher(
         new AntPathRequestMatcher("/health"),
         new AntPathRequestMatcher("/actuator/health"),
         new AntPathRequestMatcher("/api/auth/csrf"),
@@ -55,7 +56,7 @@ class AuthenticatedSessionActivityFilter extends OncePerRequestFilter {
         FilterChain filterChain
     ) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (publicRequest.matches(request) || !isAuthenticated(authentication)) {
+        if (PUBLIC_REQUESTS.matches(request) || !isAuthenticated(authentication)) {
             filterChain.doFilter(request, response);
             return;
         }

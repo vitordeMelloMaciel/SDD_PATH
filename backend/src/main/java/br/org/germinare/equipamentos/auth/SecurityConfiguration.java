@@ -18,8 +18,11 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.SecurityFilterChain;
+
+import br.org.germinare.equipamentos.user.AppUserRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -76,7 +79,8 @@ public class SecurityConfiguration {
         CsrfTokenRepository csrfTokenRepository,
         Clock clock,
         @Value("${app.security.session-idle-timeout:8h}") Duration idleTimeout,
-        SessionCookieService sessionCookieService
+        SessionCookieService sessionCookieService,
+        AppUserRepository appUserRepository
     ) throws Exception {
         return http
             .authorizeHttpRequests(authorize -> authorize
@@ -87,6 +91,7 @@ public class SecurityConfiguration {
                     "/api/auth/login",
                     "/api/auth/logout"
                 ).permitAll()
+                .requestMatchers("/api/equipment", "/api/loans", "/api/loans/**").hasRole("COLABORADOR")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())
@@ -105,6 +110,9 @@ public class SecurityConfiguration {
             .addFilterAfter(new AuthenticatedSessionActivityFilter(
                 clock, idleTimeout, authenticationEntryPoint, sessionCookieService
             ), SecurityContextHolderFilter.class)
+            .addFilterAfter(new ActiveAccountFilter(
+                appUserRepository, authenticationEntryPoint, sessionCookieService
+            ), CsrfFilter.class)
             .build();
     }
 }

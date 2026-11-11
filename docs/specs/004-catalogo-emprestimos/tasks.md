@@ -88,9 +88,9 @@ Commit sugerido: `test(loans): prove concurrent requests keep one loan and the l
 
 ## T005 · CA-05 (API). Conta ativa, papel e CSRF
 
-- [ ] `ActiveAccountFilter` depois do `CsrfFilter` e antes da autorização: conta inexistente ou inativa recebe 401 `UNAUTHENTICATED`, com a sessão invalidada e o cookie expirado, nas três rotas e em `GET /api/auth/session`.
-- [ ] Restringir as três rotas ao papel `colaborador`: `operacoes` ativo recebe 403 `FORBIDDEN` (“Acesso negado.”).
-- [ ] Testes:
+- [x] `ActiveAccountFilter` depois do `CsrfFilter` e antes da autorização: conta inexistente ou inativa recebe 401 `UNAUTHENTICATED`, com a sessão invalidada e o cookie expirado, nas três rotas e em `GET /api/auth/session`.
+- [x] Restringir as três rotas ao papel `colaborador`: `operacoes` ativo recebe 403 `FORBIDDEN` (“Acesso negado.”).
+- [x] Testes:
   - 401 sem sessão nas três rotas e 403 para `operacoes` ativo;
   - no POST com CSRF válido, 401 sem sessão e 403 para `operacoes`; com token ausente ou inválido, 403 `CSRF_INVALID`, com e sem sessão, inclusive de conta desativada;
   - conta **desativada** e conta **excluída**, com papel **`colaborador`** e com papel **`operacoes`**: 401 nas três rotas e em `GET /api/auth/session`, nenhum empréstimo criado, e o cookie antigo continua com 401;
