@@ -96,7 +96,17 @@ A skill fica em `.agents/skills/solid/SKILL.md` e deve citar o codigo real, resp
 
 A Vercel publica apenas o frontend Next.js. No projeto da Vercel, configure `frontend` como **Root Directory**; o `frontend/vercel.json` fixa o pnpm 10 e deixa o adaptador Next usar o diretorio de saida padrao. O backend Spring Boot precisa de uma hospedagem Java separada; em producao, ele podera usar o PostgreSQL do Supabase por JDBC.
 
-O Supabase ainda nao foi provisionado. Consulte `supabase/README.md` e nao adicione credenciais ao Git.
+Para ligar o login publicado, abra primeiro `https://<host-do-backend>/health`
+e confirme HTTP 200 com o banco ativo. No projeto Vercel, configure
+`INTERNAL_API_BASE_URL` no ambiente **Production** com a origem HTTPS do
+Spring, sem o sufixo `/api`. Faça um novo deploy de produção. O Next.js lê
+essa variável durante o build.
+
+Confira `/api/auth/csrf` no domínio da Vercel. O esperado é HTTP 200 com um
+token JSON. Um 404 indica que o encaminhamento ou o endpoint do Spring ainda
+está ausente. No backend de produção, configure `SESSION_COOKIE_SECURE=true`.
+As credenciais JDBC ficam no host do Spring. Consulte `supabase/README.md`
+para preparar o banco.
 
 ## Processo
 
