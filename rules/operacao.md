@@ -9,9 +9,9 @@ alwaysApply: true
 ## Git
 > leitor: agente
 
-- O agente pode criar branch com prefixo `codex/`, commitar e publicar essa branch depois de rodar os checks e mostrar o resumo do diff ao operador.
-- `main` recebe mudancas somente por pull request. O merge continua sendo do operador, depois de revisar o diff e os checks.
-- O agente nunca faz push direto em `main`, nunca reescreve historico remoto e nunca cria tag de entrega sem autorizacao especifica.
+- O agente pode commitar e publicar a branch atual depois de rodar os checks e mostrar o resumo do diff ao operador.
+- Neste repositorio individual, o agente pode atualizar `main` diretamente quando o operador autorizar explicitamente esse fluxo. A autorizacao nao dispensa diff, testes nem commits separados por tarefa.
+- O agente nunca reescreve historico remoto e nunca cria tag de entrega sem autorizacao especifica.
 - A mensagem de commit cita a tarefa e o criterio de aceitacao, quando existir.
 - Um commit por tarefa. Nunca junte codigo e mudanca de regra no mesmo commit.
 
