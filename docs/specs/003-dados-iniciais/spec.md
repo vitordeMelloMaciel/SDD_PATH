@@ -1,7 +1,7 @@
 # Spec 003 — Dados iniciais do acervo
 
 **Estado** · `APROVAVEL` na rodada `pre-approval-03`, base `e0cbaca`.
-Aguardando aprovação do operador.
+Aprovada pelo operador para implementação.
 
 **Referências** · PRD itens 1 e 2, briefing de dados iniciais da prática, ADR-001,
 Spec 002 (schema), Spec 001 (provisionamento) e skill `imagens-equipamentos`.
@@ -34,7 +34,7 @@ provisionar a conta de avaliação, que deve chegar à correção com zero empr�
   autor e licença.
 - O operador faz upload usando chaves fixas, aplica as migrations em produção
   e provisiona `marcelo.grilo@institutojef.org.br` como colaborador ativo.
-  O nome completo proposto é `Marcelo Grilo`, sujeito à aprovação da spec.
+  O nome completo aprovado é `Marcelo Grilo`.
   A senha chega ao comando por variável de ambiente. A carga do acervo
   não cria usuários nem empréstimos. Os testes usam uma conta separada.
 
@@ -61,7 +61,6 @@ provisionar a conta de avaliação, que deve chegar à correção com zero empr�
 
 ## Pendências
 
-- Aprovação do operador após revisão pelo `spec-validator`.
 - Configurar `PIXABAY_API_KEY` no ambiente local e preparar as fotos.
 - Identificar a URL pública do bucket e obter evidência das ações do operador
   no banco e no Storage no momento da publicação.

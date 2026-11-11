@@ -5,5 +5,6 @@
 - Frontend passou em `pnpm run typecheck` e `pnpm run build` dentro do Docker. Teste local pelo Next.js confirmou raiz 200 com CSP, login 200, cookie HttpOnly, logout 204 e sessão encerrada 401.
 - Spec 001 ainda precisa de verificação de teclado, foco e alertas no navegador, matriz final e rodada independente pós-implementação. A tentativa de abrir o navegador de teste expirou.
 - A raiz pública da Vercel respondeu 200 com a tela de login. `GET /api/auth/csrf` retornou 404. Falta conectar um host HTTPS do backend Spring via `INTERNAL_API_BASE_URL` e validar o fluxo publicado.
-- Spec 002 continua sendo o schema Flyway existente. A Spec 003 trata a carga dos 12 equipamentos e a conta de avaliação, recebeu `APROVAVEL` na rodada `pre-approval-03` e aguarda aprovação do operador. A Pixabay exige chave no ambiente local e revisão visual das fotos. O operador executa as escritas no Supabase de produção.
+- Spec 002 continua sendo o schema Flyway existente. A Spec 003 recebeu `APROVAVEL` e foi aprovada pelo operador. O plano apresenta a V3 para autorização específica do DDL. A chave Pixabay ainda está ausente no ambiente local. O operador executa as escritas no Supabase de produção.
+- O operador confirmou as decisões da Spec 004. A rodada final de pré-aprovação está em andamento.
 - Restam catálogo, solicitação e Meus empréstimos. A entrega final precisa da matriz verificada em produção, do `ENTREGA.md` e da tag `entrega-pratica` após autorização específica do operador.

@@ -1,6 +1,6 @@
 # Spec 004 — Catálogo e empréstimos
 
-**Estado** · Rascunho para revisão e aprovação.
+**Estado** · Decisões confirmadas pelo operador. Verificação final de pré-aprovação pendente.
 
 **Referências** · PRD itens 1–3, ADRs 001 e 002, Specs 001–003 e briefing
 de solicitação da prática.
@@ -59,9 +59,10 @@ deixam exatamente um empréstimo aberto.
   o estado após a primeira transação. A trigger e o índice da V2 mantêm
   as restrições no banco. Os motivos da API não dependem de texto de exceção
   do PostgreSQL.
-- Proposta para aprovação: esta jornada é exclusiva de colaboradores.
-  Exibir datas em `America/Sao_Paulo`, com horário de vencimento baseado
-  no instante registrado pelo banco.
+- Esta jornada é exclusiva de colaboradores. O perfil `operacoes` não
+  acessa as três rotas nem as páginas da jornada. Exibir datas em
+  `America/Sao_Paulo`, com o vencimento baseado no instante registrado
+  pelo banco.
 
 ## Critérios de aceitação
 
