@@ -36,8 +36,8 @@ de escolha.
 
 - O Railway faz o build do `Dockerfile` existente sem adaptar o backend.
 - O serviço recebe um domínio HTTPS, o que satisfaz o cookie `Secure` da Spec 001.
-- O serviço não dorme por inatividade, então o primeiro login do professor não espera cold start.
-- O plano de teste do Railway não exige cartão para começar.
+- Entre as opções avaliadas, é a única que roda o `Dockerfile` com HTTPS sem os impedimentos registrados nas alternativas descartadas.
+- O teste do Railway oferece 1 GB de memória, 30 dias e US$ 5 de crédito. A imagem final foi validada localmente com limite de 1 GB.
 
 ## Alternativas descartadas
 
@@ -50,7 +50,7 @@ de escolha.
 ## Consequências
 
 - O que fica mais fácil: publicar o backend a partir do mesmo `Dockerfile` usado localmente e ligar a Vercel ao Spring com uma única variável, `INTERNAL_API_BASE_URL`.
-- O que fica mais difícil: o crédito do Railway é limitado (US$ 5 por 30 dias e, depois, US$ 1 por mês). Quando o crédito acabar, o backend pode parar, e o login em produção volta a falhar até o crédito ser renovado ou o host trocado.
+- O que fica mais difícil: o teste do Railway é limitado a 1 GB de memória, 30 dias e US$ 5 de crédito; depois, o crédito é de US$ 1 por mês. Quando o crédito ou o prazo acabar, o backend pode parar, e o login em produção volta a falhar até o crédito ser renovado ou o host trocado. O backend precisa caber em 1 GB.
 - O que essa escolha nos impede de fazer depois sem custo: trocar de host exige recriar as variáveis de ambiente no novo serviço e atualizar `INTERNAL_API_BASE_URL` na Vercel com um novo deploy do front. O código não muda.
 - Nenhuma credencial entra no repositório. Senha do banco, URL JDBC e demais segredos ficam só nas variáveis do Railway e da Vercel. `.env.example` continua sem valores reais.
 
