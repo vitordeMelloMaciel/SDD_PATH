@@ -4,11 +4,11 @@ Execute uma tarefa por vez. Cada item termina com diff revisado, checks proporci
 
 ## T001 - Fundacao de identidade e Spring Security
 
-- [ ] Adicionar dependencias autorizadas de Security e JPA.
-- [ ] Mapear `app_user` existente e busca por e-mail normalizado.
-- [ ] Criar principal com `id`, `fullName`, `email` e `role`.
-- [ ] Configurar encoder de senha, regras publicas/protegidas e erros JSON.
-- [ ] Testar usuario valido, inexistente, senha incorreta e inativo.
+- [x] Adicionar dependencias autorizadas de Security e JPA.
+- [x] Mapear `app_user` existente e busca por e-mail normalizado.
+- [x] Criar principal com `id`, `fullName`, `email` e `role`.
+- [x] Configurar encoder de senha, regras publicas/protegidas e erros JSON.
+- [x] Testar usuario valido, inexistente, senha incorreta e inativo.
 
 Atende: CA-02, CA-03, CA-06, CA-07 e parte de CA-09.
 
