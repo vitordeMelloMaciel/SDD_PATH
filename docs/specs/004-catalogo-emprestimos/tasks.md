@@ -20,11 +20,11 @@ reaproveitado.
 
 ## T001 · CA-07 e CA-01 (API). API de equipamentos
 
-- [ ] Entidade `Equipment` e `EquipmentRepository` sobre a tabela existente.
-- [ ] `GET /api/equipment` devolve todo o acervo, ordenado por patrimônio, com exatamente `id`, `assetCode`, `name`, `category`, `status` e `imageUrl`, sem ler `loan`.
-- [ ] `imageUrl` vem de `EquipmentImageUrls.urlFor(imageObjectKey)`.
-- [ ] Teste de privacidade (CA-07): com A titular de um empréstimo aberto e B sem empréstimos, o objeto do item emprestado é idêntico para os dois, tem exatamente os seis campos e nenhum valor contém e-mail, nome, ID de usuário, ID de empréstimo, `loaned_at` ou `due_at` de A.
-- [ ] Teste de `imageUrl` com e sem `EQUIPMENT_IMAGE_BASE_URL`.
+- [x] Entidade `Equipment` e `EquipmentRepository` sobre a tabela existente.
+- [x] `GET /api/equipment` devolve todo o acervo, ordenado por patrimônio, com exatamente `id`, `assetCode`, `name`, `category`, `status` e `imageUrl`, sem ler `loan`.
+- [x] `imageUrl` vem de `EquipmentImageUrls.urlFor(imageObjectKey)`.
+- [x] Teste de privacidade (CA-07): com A titular de um empréstimo aberto e B sem empréstimos, o objeto do item emprestado é idêntico para os dois, tem exatamente os seis campos e nenhum valor contém e-mail, nome, ID de usuário, ID de empréstimo, `loaned_at` ou `due_at` de A.
+- [x] Teste de `imageUrl` com e sem `EQUIPMENT_IMAGE_BASE_URL`.
 
 Código local:
 - **Cobre:** rota, ordenação e status (`LoanController.catalog`, `LoanService.catalog`).
