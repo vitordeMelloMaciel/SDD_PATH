@@ -8,6 +8,20 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 - Producao atual: <https://sdd-path-pi.vercel.app/>
 - Branch de trabalho: `main` (fluxo direto aprovado pelo operador, com checks e commits separados)
 
+## Estado para a correção
+
+| Requisito do HTML | Estado e evidência |
+| --- | --- |
+| Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; três rodadas de pré-aprovação registradas na Spec 001. A verificação final e a prova com erro plantado seguem pendentes. |
+| Skill de imagens | API da Pixabay e busca em lotes executadas. Quatro fotos aprovadas, oito pendentes. Commits `ad2d9af` e `9277a10`. |
+| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada e plano versionado. Migration, manifesto completo, upload e conta de avaliação em produção pendentes. |
+| Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. A Spec 004 aguarda a decisão sobre privacidade do card. Catálogo, API e jornada da prática pendentes. |
+| Entrega e link de produção | Tela de login publicada. Fluxo local validado com conta descartável. A API pública ainda retorna 404, por isso a jornada de produção e a tag final seguem pendentes. |
+
+Os oito testes de autenticação passaram no Docker, incluindo os casos de CSRF
+ausente, inválido e antigo (`a932cce`) e a conferência de senha e hash fora
+dos logs e respostas (`77dfd30`).
+
 ## 1. Conflitos: o que foi pedido contra o que ja existia
 
 | pedido | contrariava o que | decisao do operador | por que | evidencia | commit |
@@ -46,7 +60,12 @@ Pendente. A adocao do Supabase Storage veio como requisito da pratica; a hospeda
 - `references/equipment.json` guarda a lista uniforme da pratica.
 - `scripts/prepare-images.mjs` garante cache, candidatos unicos, aprovacao visual explicita, 800x600, hashes unicos e manifesto de creditos.
 - A skill nao possui cliente nem credencial do Supabase e nao consegue publicar. O operador recebe arquivos e chaves deterministicas para executar o upload.
-- Fotos reprovadas na revisao visual: pendente, porque nenhuma consulta autenticada a Pixabay foi executada.
+- A consulta autenticada a Pixabay foi executada. Quatro fotos passaram na
+  revisao visual local, para TI-0002, TI-0008, TI-0009 e TI-0010. Outros
+  candidatos foram recusados por pessoa, marca, texto, tela com conteudo
+  ou por mostrar um objeto diferente. O commit `9277a10` adiciona a busca
+  em lotes, preservando as aprovacoes. O manifesto final e o upload aguardam
+  as oito fotos restantes.
 
 ## 5. O subagente verificador
 
@@ -74,6 +93,6 @@ Os relatorios estao em `docs/specs/001-login/verification/`. A spec aprovada foi
 - O login, a sessao e o logout passaram localmente via Next.js, Spring e PostgreSQL descartavel. O commit `e0cbaca` publica a tela e o encaminhamento same-origin. O fluxo ainda precisa da revisao interativa e da verificacao independente final.
 - A Vercel serve a tela de login com HTTP 200. A rota CSRF retorna HTTP 404 enquanto o frontend de producao aguarda configuracao do backend Spring.
 - A carga inicial, o catalogo, a solicitacao e Meus emprestimos ainda estao pendentes.
-- A chave da Pixabay ainda precisa ser configurada localmente pelo operador; ela nunca sera solicitada no chat nem versionada.
+- A chave da Pixabay esta configurada localmente. O arquivo `.env` esta ignorado pelo Git.
 - Nenhuma migration, imagem ou conta foi aplicada ao Supabase de producao.
 - A suite do backend passou com 15 testes em Docker e PostgreSQL descartavel. O frontend passou em `pnpm run typecheck` e `pnpm run build`. A verificacao final da pratica precisa da matriz no link de producao.
