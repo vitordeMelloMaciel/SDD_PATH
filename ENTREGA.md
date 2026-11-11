@@ -121,6 +121,20 @@ A Spec 003 foi bloqueada na rodada `pre-approval-01-94a8197`. O estado citava um
 
 Depois das respostas do operador às perguntas das rodadas, as duas specs mudaram e passaram por nova rodada: `pre-approval-03-8d40630` na Spec 003 e `pre-approval-07-8d40630` na Spec 004, ambas `APROVAVEL`. O operador aprovou as duas specs em 2026-11-11. Na 003, aprovou também `plan.md`, `tasks.md` e o DDL da V3 (`42acd95`, `b0046fa`).
 
+### Quem executou as rodadas
+
+As três rodadas da Spec 001 rodaram pelo Codex CLI, como registra o cabeçalho de cada relatório. O Codex CLI não estava instalado nesta máquina quando as Specs 003 e 004 foram validadas. Por isso, todas as rodadas dessas duas specs, inclusive a do `plan.md` e do `tasks.md` da 004, rodaram como subagentes Claude Code, com as instruções de `.codex/agents/spec-validator.toml`, em contexto limpo e somente leitura. O cabeçalho de cada relatório registra o executor.
+
+### Rodadas que reprovaram algo
+
+| Spec | Rodada | Resultado | CA | Causa | Commit |
+| --- | --- | --- | --- | --- | --- |
+| 001 | `pre-approval-01-c485d8a` | BLOQUEADA | CA-09; o resto foi de contrato, sem CA | Seis lacunas: contrato HTTP indefinido, ADR-002 não declarado, usuário inativo e HTTP-only sem aceite, expiração de sessão indefinida, provisionamento sem contrato e responsabilidade pelo schema | `052dc17` |
+| 001 | `pre-approval-02-c485d8a` | BLOQUEADA | CA-05 e CA-10; o resto foi de contrato, sem CA | Envelope ambíguo de `GET /api/auth/session`, logout fora das rotas públicas e repetição do logout sem sequência CSRF | `052dc17` |
+| 003 | `pre-approval-01-94a8197` | BLOQUEADA | CA-02; estado da spec, sem CA | O cabeçalho citava uma rodada `pre-approval-03` inexistente, e o CA-02 não definia ambiente, mecanismo nem executor da repetição da carga | `a726f85` |
+| 004 | `pre-approval-05-94a8197` | BLOQUEADA | Card emprestado (originou o CA-07); estado da spec, sem CA | Spec divergente do ADR-002 no rodapé do card emprestado, falta de contrato e de CA de privacidade, e cabeçalho “confirmado” com uma decisão em aberto | `212f0f8` |
+| 004 | `plan-01-c52ae79` (`plan.md` e `tasks.md`) | BLOQUEADA | CA-02, CA-03, CA-04 e CA-07 (tarefas de API); CA-05 | O plano atribuía ao ADR-001 o acesso por `JdbcTemplate` com SQL no service, mas o ADR-001 escolhe Spring Data JPA e descarta SQL em services. Além disso, conta desativada ou excluída não era detectada por `GET /api/auth/session` nem antes da checagem de papel nas rotas | `f8ef24b` |
+
 ## 7. Uma regra que a pratica pos a prova
 
 `rules/spec-flow.md` exigia o verificador apenas antes da aprovacao da spec. A pratica mostrou que isso nao garantia uma revisao independente da implementacao. O fluxo agora exige uma segunda rodada, registrada e somente leitura (`b753715`).
