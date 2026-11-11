@@ -93,12 +93,32 @@ e exigem autorização do operador no momento da ação.
 - `references/equipment.json` guarda a lista uniforme da pratica.
 - `scripts/prepare-images.mjs` garante cache, candidatos unicos, aprovacao visual explicita, 800x600, hashes unicos e manifesto de creditos.
 - A skill nao possui cliente nem credencial do Supabase e nao consegue publicar. O operador recebe arquivos e chaves deterministicas para executar o upload.
-- A consulta autenticada a Pixabay foi executada. Quatro fotos passaram na
-  revisao visual local, para TI-0002, TI-0008, TI-0009 e TI-0010. Outros
-  candidatos foram recusados por pessoa, marca, texto, tela com conteudo
-  ou por mostrar um objeto diferente. O commit `9277a10` adiciona a busca
-  em lotes, preservando as aprovacoes. O manifesto final e o upload aguardam
-  as oito fotos restantes.
+- A consulta autenticada a Pixabay foi executada. O commit `9277a10` adiciona a
+  busca em lotes, preservando as aprovacoes. Em 2026-11-11, um novo `search-next`
+  baixou mais 17 candidatos. No total, foram 157 candidatos para os 12 itens.
+- Em 2026-11-11, o operador, Vitor Maciel, aprovou como revisor uma foto para
+  cada um dos 12 itens. Ele confirmou os quatro controles visuais em cada uma:
+  sem pessoa, sem marca ou logo legivel, sem texto e sem tela com conteudo.
+
+  | Item | ID na Pixabay | Item | ID na Pixabay |
+  | --- | --- | --- | --- |
+  | TI-0001 | 4532322 | TI-0007 | 3518277 |
+  | TI-0002 | 791032 | TI-0008 | 1827 |
+  | TI-0003 | 924920 | TI-0009 | 7066188 |
+  | TI-0004 | 2425303 | TI-0010 | 494647 |
+  | TI-0005 | 1834328 | TI-0011 | 1219748 |
+  | TI-0006 | 606761 | TI-0012 | 541213 |
+- As quatro fotos aprovadas antes (TI-0002, TI-0008, TI-0009 e TI-0010)
+  continuam as mesmas. Elas estavam registradas com o revisor `Codex`, que e o
+  nome de um agente, e o revisor passou a ser Vitor Maciel, que revisou as 12.
+- Os outros 145 candidatos nao foram escolhidos. Os motivos de recusa
+  registrados sao pessoa, marca, texto, tela com conteudo ou outro objeto. O
+  projeto nao registra o motivo de cada candidato.
+- O `finalize` gerou as 12 imagens em 800x600, com IDs e hashes unicos. O
+  manifesto final e as aprovacoes foram copiados sem alteracao para
+  `docs/specs/003-dados-iniciais/verification/manifesto/` (CA-03, `e8679d3`).
+  O revisor aparece so pelo nome, sem e-mail. O upload ao Supabase Storage
+  (CA-04) continua pendente e e feito pelo operador.
 
 ## 5. O subagente verificador
 
