@@ -21,7 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +38,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import br.org.germinare.equipamentos.user.UserRole;
 
 @Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = "server.servlet.session.cookie.secure=true"
+)
 class AuthenticationFoundationIntegrationTest {
     private static final String VALID_PASSWORD = "senha-segura-para-teste";
     private static final Instant LOGIN_TIME = Instant.parse("2026-01-01T00:00:00Z");
@@ -71,6 +76,7 @@ class AuthenticationFoundationIntegrationTest {
 
     @BeforeEach
     void cleanDatabase() {
+        restTemplate.getRestTemplate().setRequestFactory(new JdkClientHttpRequestFactory());
         when(clock.instant()).thenReturn(LOGIN_TIME);
         jdbc.update("delete from loan");
         jdbc.update("delete from equipment");
@@ -137,7 +143,7 @@ class AuthenticationFoundationIntegrationTest {
             "role", "colaborador"
         ));
         String setCookie = cookieHeader(login, "SESSION");
-        assertThat(setCookie).contains("HttpOnly", "SameSite=Lax", "Path=/")
+        assertThat(setCookie).contains("HttpOnly", "Secure", "SameSite=Lax", "Path=/")
             .doesNotContain("Max-Age", "Expires", VALID_PASSWORD);
         String sessionCookie = setCookie.split(";", 2)[0];
         HttpHeaders sessionHeaders = new HttpHeaders();
@@ -155,6 +161,37 @@ class AuthenticationFoundationIntegrationTest {
             .isEqualTo(HttpStatus.NO_CONTENT);
     }
 
+    @Test
+    void ca03InvalidCredentialsShareOneHttpResponseAndNeverIssueSessionCookies() {
+        createUser("ativa@example.org", VALID_PASSWORD, "Pessoa Ativa", "colaborador", true);
+        createUser("inativa@example.org", VALID_PASSWORD, "Pessoa Inativa", "colaborador", false);
+
+        for (var credentials : java.util.List.of(
+            Map.of("email", "ausente@example.org", "password", VALID_PASSWORD),
+            Map.of("email", "ativa@example.org", "password", "senha-incorreta"),
+            Map.of("email", "inativa@example.org", "password", VALID_PASSWORD)
+        )) {
+            var response = authRequest(HttpMethod.POST, "/login", csrfHeaders(null), credentials);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+            assertThat(response.getBody()).isEqualTo(Map.of(
+                "code", "INVALID_CREDENTIALS", "message", "E-mail ou senha invalidos."
+            ));
+            assertThat(response.getHeaders().getOrEmpty(HttpHeaders.SET_COOKIE))
+                .noneMatch(cookie -> cookie.startsWith("SESSION="));
+        }
+    }
+
+    @Test
+    void ca02MalformedOrIncompleteLoginReturnsInvalidRequest() {
+        for (Object body : java.util.List.of("{", Map.of("email", "ativa@example.org"))) {
+            var response = authRequest(HttpMethod.POST, "/login", csrfHeaders(null), body);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(response.getBody()).isEqualTo(Map.of(
+                "code", "INVALID_REQUEST", "message", "Informe e-mail e senha."
+            ));
+        }
+    }
+
     private HttpHeaders csrfHeaders(String sessionCookie) {
         HttpHeaders headers = new HttpHeaders();
         if (sessionCookie != null) {
@@ -165,6 +202,7 @@ class AuthenticationFoundationIntegrationTest {
         String csrfCookie = cookieHeader(csrf, "XSRF-TOKEN").split(";", 2)[0];
         headers.set(HttpHeaders.COOKIE, sessionCookie == null ? csrfCookie : sessionCookie + "; " + csrfCookie);
         headers.set("X-XSRF-TOKEN", (String) csrf.getBody().get("token"));
+        headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
     }
 
