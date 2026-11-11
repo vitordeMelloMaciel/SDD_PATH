@@ -162,6 +162,36 @@ class AuthenticationFoundationIntegrationTest {
     }
 
     @Test
+    void ca10RejectsMissingInvalidAndStaleCsrfTokensWithExactError() {
+        createUser("ativa@example.org", VALID_PASSWORD, "Pessoa Ativa", "colaborador", true);
+        var credentials = Map.of("email", "ativa@example.org", "password", VALID_PASSWORD);
+        for (String path : java.util.List.of("/login", "/logout")) {
+            Object body = path.equals("/login") ? credentials : null;
+            assertCsrfRejected(authRequest(HttpMethod.POST, path, new HttpHeaders(), body));
+            var invalidHeaders = csrfHeaders(null);
+            invalidHeaders.set("X-XSRF-TOKEN", "token-invalido");
+            assertCsrfRejected(authRequest(HttpMethod.POST, path, invalidHeaders, body));
+        }
+
+        var originalHeaders = csrfHeaders(null);
+        String staleToken = originalHeaders.getFirst("X-XSRF-TOKEN");
+        var login = authRequest(HttpMethod.POST, "/login", originalHeaders, credentials);
+        assertThat(login.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String session = cookieHeader(login, "SESSION").split(";", 2)[0];
+        var newHeaders = csrfHeaders(session);
+        newHeaders.set("X-XSRF-TOKEN", staleToken);
+        assertCsrfRejected(authRequest(HttpMethod.POST, "/logout", newHeaders, null));
+        assertCsrfRejected(authRequest(HttpMethod.POST, "/login", newHeaders, credentials));
+    }
+
+    private void assertCsrfRejected(ResponseEntity<Map> response) {
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getBody()).isEqualTo(Map.of(
+            "code", "CSRF_INVALID", "message", "Atualize a pagina e tente novamente."
+        ));
+    }
+
+    @Test
     void ca03InvalidCredentialsShareOneHttpResponseAndNeverIssueSessionCookies() {
         createUser("ativa@example.org", VALID_PASSWORD, "Pessoa Ativa", "colaborador", true);
         createUser("inativa@example.org", VALID_PASSWORD, "Pessoa Inativa", "colaborador", false);
