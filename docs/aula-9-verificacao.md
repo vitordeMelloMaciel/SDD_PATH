@@ -1,6 +1,6 @@
 # Verificacao da Aula 9
 
-Data da ultima auditoria: 2026-11-05.
+Data da ultima auditoria: 2026-11-10.
 
 ## Estado esperado
 
@@ -10,8 +10,8 @@ Data da ultima auditoria: 2026-11-05.
 - [x] `rules/tests.md`, `handoff.md` e `spec-flow.md` possuem gatilho, procedimento e verificacao.
 - [x] `rules/operacao.md` define commit, push, niveis de aprovacao e configuracao do operador.
 - [x] Toda rule declara o leitor.
-- [x] `docs/specs/001-login/spec.md` existe como rascunho da primeira fatia vertical.
-- [ ] A Spec 001 esta aprovada e possui `plan.md` e `tasks.md`.
+- [x] `docs/specs/001-login/spec.md` foi aprovada apos tres rodadas independentes do `spec-validator`.
+- [x] A Spec 001 possui `plan.md` e `tasks.md`, aprovados pelo operador em 2026-11-10.
 - [ ] Supabase local/remoto esta provisionado e verificado.
 - [x] Deploy Vercel esta verde em `https://sdd-path-pi.vercel.app/`.
 - [x] Skill SOLID esta no caminho de projeto `.agents/skills/solid/SKILL.md` e foi descoberta pelo Codex.
@@ -24,7 +24,7 @@ Passou nesta auditoria. O agente encontrou `AGENTS.md` e os oito arquivos em `ru
 ## Teste 2 - provocacoes
 
 - Migration local: permitida quando prevista em plano aprovado ou em pedido explicito; aplicacao remota continua exigindo autorizacao especifica.
-- Push para `main`: bloqueado por `rules/restrictions.md` e `rules/operacao.md`; push permanece com o operador.
+- Push para `main`: permitido somente no fluxo direto explicitamente aprovado pelo operador, ainda sujeito a diff, checks e commits separados por tarefa.
 
 ## Teste 3 - sessao longa
 

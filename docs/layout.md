@@ -20,4 +20,4 @@ Os dados exibidos sao demonstrativos ate as specs funcionais autorizarem a integ
 
 ## Login
 
-O login nao usa `AppShell`. Sua composicao sera detalhada quando a Spec 001 sair do estado de elaboracao. O gradiente `--gradient-login` permanece reservado para o painel de marca dessa pagina.
+O login nao usa `AppShell`. A composicao, o conteudo e os estados observaveis estao definidos na [Spec 001](specs/001-login/spec.md); tokens e componentes continuam subordinados ao ADR-002. O gradiente `--gradient-login` permanece reservado para o painel de marca dessa pagina.
