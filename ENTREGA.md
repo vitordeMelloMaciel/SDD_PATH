@@ -14,7 +14,7 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 | --- | --- |
 | Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (três) e 004 (rodadas 05 a 07). A verificação final e a prova com erro plantado seguem pendentes. |
 | Skill de imagens | API da Pixabay e busca em lotes executadas. Quatro fotos aprovadas, oito pendentes. Commits `ad2d9af` e `9277a10`. |
-| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. V3 (`65ee264`, T001) e V4 com a carga dos 12 itens (`a46cbd7`, T002) commitadas localmente; suíte com 26 testes passando. Manifesto completo, upload, aplicação em produção e conta de avaliação pendentes. |
+| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. V3 (`65ee264`, T001) e V4 com a carga dos 12 itens (`a46cbd7`, T002) e composição de `EQUIPMENT_IMAGE_BASE_URL` (`d16a3e6`, T006) commitadas; suíte com 31 testes passando. Manifesto completo, upload, aplicação em produção e conta de avaliação pendentes. |
 | Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. Spec 004 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-07-8d40630` (`b0046fa`); plano e tarefas pendentes. Catálogo, API e jornada da prática pendentes. |
 | Entrega e link de produção | Tela de login publicada. Fluxo local validado com conta descartável. A API pública ainda retorna 404, por isso a jornada de produção e a tag final seguem pendentes. |
 
@@ -71,6 +71,10 @@ Na implementação da T001 e da T002, o agente fez duas escolhas técnicas que o
 - A V4 usa `set image_object_key = excluded.image_object_key` no lugar de `coalesce(equipment.image_object_key, excluded.image_object_key)`, como estava no rascunho. As duas formas são equivalentes, porque o `where equipment.image_object_key is null` só atualiza linhas sem chave.
 
 No ADR-003, o agente escreveu duas afirmações sobre o Railway sem fonte: que o serviço não é suspenso por inatividade e que o teste não exige cartão. O operador pediu para retirá-las e informou os limites do teste: 1 GB de memória, 30 dias e US$ 5 de crédito (`580dc2b`).
+
+Na T006 da Spec 003 e no plano da Spec 004, o agente fez escolhas que aguardam a revisão do operador:
+- `EquipmentImageUrls` ignora a barra final de `EQUIPMENT_IMAGE_BASE_URL`, como o `next.config.ts` já fazia (`d16a3e6`). A spec só diz que a base vem sem barra final.
+- O plano da Spec 004 propõe responder 409 `EQUIPMENT_BORROWED` quando o índice `uq_loan_open_equipment` rejeitar uma inserção depois da leitura sob bloqueio, e 500 sem empréstimo para qualquer outra rejeição. A spec não define esse caso, e a proposta depende de aprovação (`fdee1f2`).
 
 ## 3. Uma decisao que merece ou nao um ADR
 
