@@ -14,7 +14,7 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 | --- | --- |
 | Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (três) e 004 (rodadas 05 a 07). A verificação final e a prova com erro plantado seguem pendentes. |
 | Skill de imagens | API da Pixabay e busca em lotes executadas. Quatro fotos aprovadas, oito pendentes. Commits `ad2d9af` e `9277a10`. |
-| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. A V4 ainda não foi aprovada. Migration, manifesto completo, upload e conta de avaliação em produção pendentes. |
+| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. V3 (`65ee264`, T001) e V4 com a carga dos 12 itens (`a46cbd7`, T002) commitadas localmente; suíte com 26 testes passando. Manifesto completo, upload, aplicação em produção e conta de avaliação pendentes. |
 | Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. Spec 004 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-07-8d40630` (`b0046fa`); plano e tarefas pendentes. Catálogo, API e jornada da prática pendentes. |
 | Entrega e link de produção | Tela de login publicada. Fluxo local validado com conta descartável. A API pública ainda retorna 404, por isso a jornada de produção e a tag final seguem pendentes. |
 
@@ -50,7 +50,7 @@ dos logs e respostas (`77dfd30`).
 | Dados iniciais (Spec 003) | Se o nome do revisor das fotos pode ir para o Git | Anonimizar; versionar nome e e-mail; versionar só o nome | Versionar só o nome, sem e-mail | É a evidência da revisão visual que o enunciado pede | `42acd95` |
 | Dados iniciais (Spec 003) | Qual spec implementa `EQUIPMENT_IMAGE_BASE_URL` | Spec 003; Spec 004 | Spec 003 (T006, CA-04); a 004 só consome a URL | É a 003 que define o bucket e as chaves | `42acd95` |
 | Login | Provisionamento, duracao de sessao, usuario inativo e tentativas incorretas | Registradas na Spec 001 | Provisionamento administrativo idempotente; sessao de 8 h por inatividade; inativo indistinguivel de credencial invalida; sem bloqueio na v1; conta de teste separada | Fecha as lacunas sem versionar segredo nem inventar regra de negocio | `052dc17` |
-| Dados iniciais | Como repetir a carga e tratar patrimonio existente | Ignorar colisao, sobrescrever ou recusar divergencia | Aprovada na Spec 003. Preservar identidade e estado operacional, preencher chave ausente e recusar divergencia em transacao unica | Evita duplicatas e impede que a carga desfaça emprestimos ou troque fotos ja associadas | `a726f85`, `42acd95` |
+| Dados iniciais | Como repetir a carga e tratar patrimonio existente | Ignorar colisao, sobrescrever ou recusar divergencia | Aprovada na Spec 003. Preservar identidade e estado operacional, preencher chave ausente e recusar divergencia em transacao unica | Evita duplicatas e impede que a carga desfaça emprestimos ou troque fotos ja associadas | `a726f85`, `42acd95`; V4 aprovada pelo operador em 2026-11-11 com a lógica do rascunho e implementada em `a46cbd7` |
 
 ## 2. Onde o agente tentou decidir pelo operador
 
@@ -65,6 +65,10 @@ Ao corrigir os bloqueios, o agente propôs detalhes que o operador não tinha pe
 - O contêiner da foto é 4:3 com `object-fit: cover`.
 - Para `operacoes`, a página mostra "Acesso negado" e "Esta área é exclusiva de colaboradores.".
 - O erro `FORBIDDEN` usa a mensagem "Acesso negado.".
+
+Na implementação da T001 e da T002, o agente fez duas escolhas técnicas que o operador não pediu:
+- O `docker compose run --rm backend-test` copia `backend/src` inteiro para a imagem, inclusive o código não rastreado da 004. Para o resultado refletir exatamente cada commit, a suíte rodou num git worktree limpo do commit, com o mesmo comando.
+- A V4 usa `set image_object_key = excluded.image_object_key` no lugar de `coalesce(equipment.image_object_key, excluded.image_object_key)`, como estava no rascunho. As duas formas são equivalentes, porque o `where equipment.image_object_key is null` só atualiza linhas sem chave.
 
 ## 3. Uma decisao que merece ou nao um ADR
 
