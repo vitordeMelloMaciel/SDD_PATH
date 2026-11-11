@@ -112,10 +112,10 @@ Commit sugerido: `feat(loans): reject inactive accounts and restrict routes to c
 
 ## T006 · CA-05 (páginas) e CA-01 (destino). Proteção das páginas
 
-- [ ] `/catalogo` e `/meus-emprestimos` consultam `GET /api/auth/session` no servidor antes de renderizar. Sem sessão, ou com 401, inclusive de conta desativada ou excluída (T005), redirecionam para `/`.
-- [ ] Para `operacoes`, mostrar só “Acesso negado” e “Esta área é exclusiva de colaboradores.”, sem lista e sem chamar as três rotas.
-- [ ] Para o colaborador, neste commit cada página mostra só o quadro (cabeçalho, navegação e sair) e o título. O conteúdo entra na T007 e na T008. Nenhum trecho do `Catalog` local entra neste commit.
-- [ ] A página de login leva colaborador e `operacoes` a `/catalogo` após o login.
+- [x] `/catalogo` e `/meus-emprestimos` consultam `GET /api/auth/session` no servidor antes de renderizar. Sem sessão, ou com 401, inclusive de conta desativada ou excluída (T005), redirecionam para `/`.
+- [x] Para `operacoes`, mostrar só “Acesso negado” e “Esta área é exclusiva de colaboradores.”, sem lista e sem chamar as três rotas.
+- [x] Para o colaborador, neste commit cada página mostra só o quadro (cabeçalho, navegação e sair) e o título. O conteúdo entra na T007 e na T008. Nenhum trecho do `Catalog` local entra neste commit.
+- [x] A página de login leva colaborador e `operacoes` a `/catalogo` após o login.
 - [ ] Conferência no navegador: sem sessão, colaborador, `operacoes`, e conta desativada com sessão aberta.
 
 Código local:

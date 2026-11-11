@@ -1,6 +1,7 @@
 'use client';
 
 import { PackageIcon } from '@phosphor-icons/react';
+import { useRouter } from 'next/navigation';
 import { useRef, useState, type FormEvent } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/form-controls';
@@ -20,6 +21,7 @@ async function loadCsrfToken(): Promise<string> {
 }
 
 export function LoginPage() {
+  const router = useRouter();
   const pending = useRef(false);
   const csrf = useRef<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -70,6 +72,8 @@ export function LoginPage() {
       const body: { user?: { fullName?: string } } = await session.json();
       if (!body.user?.fullName) throw new Error('Identidade ausente');
       setUserName(body.user.fullName);
+      // Spec 004: colaborador e operacoes seguem para /catalogo apos o login.
+      router.replace('/catalogo');
     } catch {
       setError('Nao foi possivel entrar. Tente novamente.');
     } finally {
