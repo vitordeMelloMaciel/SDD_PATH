@@ -42,11 +42,13 @@ Commit sugerido: `feat(login): add safe user provisioning command [CA-07,CA-08]`
 
 ## T004 - Pagina de login Nocturne
 
-- [ ] Encaminhar `/api/*` ao backend sem expor URL interna ao navegador.
-- [ ] Implementar a composicao desktop e os textos aprovados.
-- [ ] Implementar CSRF, loading, 400, 401, 403 e falha inesperada.
+- [x] Encaminhar `/api/*` ao backend sem expor URL interna ao navegador.
+- [x] Implementar a composicao desktop e os textos aprovados.
+- [x] Implementar CSRF, loading, 400, 401, 403 e falha inesperada.
 - [ ] Conferir teclado, foco, rotulos, `aria-invalid`, `role=alert` e CSP.
-- [ ] Rodar typecheck e build do frontend.
+- [x] Rodar typecheck e build do frontend.
+
+O teste HTTP com Next.js, Spring e PostgreSQL descartavel confirmou a pagina com CSP, o login 200, o cookie HttpOnly, o logout 204 e o acesso posterior 401. A conferencia interativa de teclado e foco ainda esta pendente.
 
 Atende: CA-01, CA-03, CA-10 e CA-11.
 

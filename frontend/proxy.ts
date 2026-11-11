@@ -10,7 +10,7 @@ export function proxy(request: NextRequest) {
     style-src 'self' 'nonce-${nonce}';
     img-src 'self' blob: data:;
     font-src 'self';
-    connect-src 'self' ${process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080'};
+    connect-src 'self';
     object-src 'none';
     base-uri 'self';
     form-action 'self';
