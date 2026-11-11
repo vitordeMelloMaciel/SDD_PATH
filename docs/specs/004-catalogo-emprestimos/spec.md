@@ -26,18 +26,26 @@ deixam exatamente um empréstimo aberto.
   contém `id`, `assetCode`, `name`, `category`, `status` e `imageUrl`.
   O status usa os valores do banco `disponivel`, `manutencao` e `emprestado`.
   A URL combina a base pública e a chave da Spec 003. Sem chave ou base,
-  `imageUrl` é `null` e o card mostra “Foto indisponível”.
+  `imageUrl` é `null`. Para URL ausente ou falha de carregamento, o card
+  mostra “Foto indisponível” no mesmo espaço da foto. O navegador usa o
+  otimizador de imagens do Next.js na mesma origem. O Next.js aceita somente
+  a origem e o caminho público do bucket da Spec 003.
 - `GET /api/loans/me` retorna HTTP 200 com uma lista dos empréstimos abertos
   do principal da sessão, ordenada por vencimento e ID. Cada item tem
   `id`, `assetCode`, `equipmentName`, `dueAt` (ISO 8601 com offset) e
   `overdue` (booleano, verdadeiro quando o vencimento passou).
-- `POST /api/loans` recebe `equipmentId` e exige CSRF. Retorna 201 com
+- `POST /api/loans` recebe o campo obrigatório `equipmentId` como UUID em JSON
+  e exige CSRF. Pelo proxy do Next.js, a página solicita o token em
+  `GET /api/auth/csrf` e o envia em `X-XSRF-TOKEN`. Retorna 201 com
   a mesma representação de Meus empréstimos. A identidade do solicitante
   vem da sessão. O banco determina a data e garante as regras concorrentes.
-- Os GETs retornam 401 sem sessão e 403 para papel sem permissão. O POST
+- Os GETs retornam 401 `UNAUTHENTICATED` sem sessão e 403 `FORBIDDEN`
+  para papel sem permissão. O POST
   retorna 403 `CSRF_INVALID` quando falta um token válido, mesmo se também
-  faltar sessão. Com token válido, retorna 401 sem sessão e 403 para papel
-  sem permissão, conforme o envelope de erros da Spec 001.
+  faltar sessão. Com token válido, retorna 401 `UNAUTHENTICATED` sem sessão e
+  403 `FORBIDDEN` para papel sem permissão, conforme o envelope da Spec 001.
+  Se o usuário da sessão deixou de estar ativo ou foi excluído, a solicitação
+  retorna 401 `UNAUTHENTICATED` e encerra a sessão.
 - Erros de negócio usam `{code, message}`. Corpo inválido retorna 400
   `INVALID_REQUEST` (“Informe um equipamento válido.”). Equipamento
   inexistente retorna 404 `EQUIPMENT_NOT_FOUND` (“Equipamento não encontrado.”).
@@ -59,12 +67,12 @@ deixam exatamente um empréstimo aberto.
 
 | ID | Evidência esperada |
 | --- | --- |
-| CA-01 | Conta de teste entra pelo Next.js e vê os 12 itens com fotos, crédito único e situação correta. Somente disponíveis podem ser solicitados. |
+| CA-01 | Conta de teste entra pelo Next.js e vê os 12 itens com situação correta. As 12 fotos carregam com proporção visual uniforme e o crédito único leva à Pixabay. Foto ausente ou falha mostra o estado alternativo. Somente disponíveis podem ser solicitados. |
 | CA-02 | Solicitação válida retorna 201. No PostgreSQL, `due_at` equivale a `loaned_at + interval '14 days'`. O item muda de situação no catálogo e aparece em Meus empréstimos com a data no fuso aprovado. |
-| CA-03 | Manutenção, item emprestado, limite de três e atraso geram recusas distinguíveis e não criam empréstimo. |
-| CA-04 | Duas solicitações concorrentes ao mesmo item em PostgreSQL real produzem um 201, um 409 e um empréstimo aberto. |
-| CA-05 | Meus empréstimos exclui itens encerrados e de outras contas. Cada rota prova 401 sem sessão e 403 para papel sem permissão. O POST prova 403 com CSRF ausente e inválido, com e sem sessão. |
-| CA-06 | O operador valida a matriz da prática em produção com conta de teste, incluindo atualização do catálogo, Meus empréstimos e recusa no limite. A conta do professor continua com zero empréstimos abertos ou encerrados na entrega. |
+| CA-03 | As quatro recusas 409 retornam os códigos acima, mostram o motivo na interface e não inserem empréstimo. JSON inválido ou UUID ausente/inválido retorna 400. UUID válido inexistente retorna 404. |
+| CA-04 | Em PostgreSQL real, duas solicitações concorrentes ao mesmo item produzem um 201, um 409 `EQUIPMENT_BORROWED` e um empréstimo aberto. Com dois empréstimos já abertos na mesma conta, duas solicitações concorrentes a itens distintos produzem um 201, um 409 `LOAN_LIMIT` e três empréstimos abertos ao final. |
+| CA-05 | Meus empréstimos exclui itens encerrados e de outras contas. Cada rota prova 401 sem sessão e 403 para papel sem permissão. Os testes do POST usam CSRF válido para provar 401 ou 403 de autorização. Token ausente ou inválido retorna 403 `CSRF_INVALID` com e sem sessão. Conta desativada durante a sessão não cria empréstimo. |
+| CA-06 | O operador entra em produção com conta de teste, confere as 12 fotos, tenta solicitar item em manutenção, solicita item disponível, confirma status emprestado e data em Meus empréstimos e prova recusa ao atingir três. Uma consulta de leitura confirma zero empréstimos abertos ou encerrados para o professor na entrega. |
 
 Fora de escopo: aprovação por Operações, fila, devolução, reserva,
 notificação, renovação e cadastro de equipamentos.
