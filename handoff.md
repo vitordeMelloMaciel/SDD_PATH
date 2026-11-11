@@ -1,14 +1,9 @@
 # Handoff
 
-- Ponto atual: Spec 001 de login e seu plano foram aprovados pelo operador apos tres rodadas independentes; implementacao ainda nao iniciada.
-- Criterio em andamento: Spec 002 esta implementada; a proxima unidade autorizada e a T001 da Spec 001.
-- Branch: `main`; fluxo direto aprovado, preservando checks e commits separados.
-- Alteracoes locais: nenhuma alteracao de produto foi iniciada; esta atualizacao documental remove estados antigos de elaboracao.
-- Banco local: Flyway V1 e V2 foram validadas anteriormente; `app_user`, `equipment` e `loan` existem; nada aplicado remotamente.
-- Supabase: projeto e CLI local ainda nao configurados; Spring Boot continua sendo a unica camada de acesso ao banco.
-- Publicado: `main` no GitHub aponta para `ec101bd`; a spec, o plano, as tarefas e as tres rodadas de pre-validacao estao publicados.
-- Frontend: Next.js, Tailwind, ADR-002, componentes acessiveis, Phosphor e CSP com nonce.
-- Agentes: skill em `.agents/skills/solid/SKILL.md`; unico subagente em `.codex/agents/spec-validator.toml`.
-- Verificacao atual: rodadas 01 e 02 bloqueadas e corrigidas; rodada 03 `APROVAVEL`. Os relatorios estao em `docs/specs/001-login/verification/`.
-- Nao fazer: nao executar mais de uma tarefa da Spec 001 por autorizacao; nao tocar em segredo, Supabase remoto ou dados de producao sem autorizacao.
-- Proximo passo: executar somente a T001, rodar os checks e parar para revisao.
+- Branch `main`. Tela de login e proxy same-origin publicados em `e0cbaca`. API em `f77e5bb`, casos HTTP de erro e cookie seguro em `5f1dc57`, provisionamento em `a5a6f1d`.
+- Backend passou com 15 testes via Testcontainers. O comando administrativo foi executado três vezes com PostgreSQL descartável, retornou 0, 0 e 3 e deixou um único usuário.
+- Frontend passou em `pnpm run typecheck` e `pnpm run build` dentro do Docker. Teste local pelo Next.js confirmou raiz 200 com CSP, login 200, cookie HttpOnly, logout 204 e sessão encerrada 401.
+- Spec 001 ainda precisa de verificação de teclado, foco e alertas no navegador, matriz final e rodada independente pós-implementação. A tentativa de abrir o navegador de teste expirou.
+- A raiz pública da Vercel respondeu 200 com a tela de login. `GET /api/auth/csrf` retornou 404. Falta conectar um host HTTPS do backend Spring via `INTERNAL_API_BASE_URL` e validar o fluxo publicado.
+- Spec 002 continua sendo o schema Flyway existente. A Spec 003 trata a carga dos 12 equipamentos e a conta de avaliação, recebeu `APROVAVEL` na rodada `pre-approval-03` e aguarda aprovação do operador. A Pixabay exige chave no ambiente local e revisão visual das fotos. O operador executa as escritas no Supabase de produção.
+- Restam catálogo, solicitação e Meus empréstimos. A entrega final precisa da matriz verificada em produção, do `ENTREGA.md` e da tag `entrega-pratica` após autorização específica do operador.

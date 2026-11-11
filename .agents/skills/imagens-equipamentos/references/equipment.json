@@ -10,5 +10,5 @@
   { "assetCode": "TI-0009", "name": "Cabo USB-C 1 m", "category": "cabo", "status": "disponivel", "query": "usb cable white background" },
   { "assetCode": "TI-0010", "name": "Cabo de rede 3 m", "category": "cabo", "status": "manutencao", "query": "ethernet cable" },
   { "assetCode": "TI-0011", "name": "Webcam Full HD", "category": "camera", "status": "disponivel", "query": "webcam" },
-  { "assetCode": "TI-0012", "name": "Camera compacta", "category": "camera", "status": "disponivel", "query": "compact camera on table" }
+  { "assetCode": "TI-0012", "name": "Câmera compacta", "category": "camera", "status": "disponivel", "query": "compact camera on table" }
 ]

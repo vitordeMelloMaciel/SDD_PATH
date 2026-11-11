@@ -15,7 +15,7 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 | Verificador pode corrigir teste quando for a unica falha | Independencia do subagente e responsabilidade do agente principal | O verificador continua somente leitura e sempre devolve a falha | Quem verifica nao pode alterar a propria evidencia | `.codex/agents/spec-validator.toml`, `rules/checks.md` | `b753715` |
 | Usar Pexels | Correcao posterior do operador em 2026-11-10: a fonte da pratica e Pixabay | Usar exclusivamente a Pixabay API | A decisao mais recente do operador corrige o material desatualizado | `.agents/skills/imagens-equipamentos/` | `ad2d9af` |
 | Instalar `sharp` diretamente | `rules/restrictions.md` exige aprovacao para nova dependencia | Dependencia aprovada pelo operador, isolada na skill e fixada por lockfile | Garante 800x600 de forma reproduzivel sem contaminar o runtime da aplicacao | `scripts/package.json`, `scripts/pnpm-lock.yaml` | `ad2d9af` |
-| Gravar a senha padrao no seed | `rules/secrets.md` e o principio de nao versionar credenciais | A senha sera recebida por variavel de ambiente e armazenada somente como hash | Evita segredo em codigo e historico Git | `.env.example`; implementacao ainda pendente | pendente |
+| Gravar a senha padrao no seed | `rules/secrets.md` e o principio de nao versionar credenciais | A senha chega por variavel de ambiente e e persistida como hash | Evita segredo em codigo e historico Git | `.env.example`, comando `backend-provision` e `UserProvisioningIntegrationTest` | `a5a6f1d` |
 | Permitir 5 emprestimos abertos | `docs/PRD.md` limita a 3 | Manter o limite de 3 | O PRD continua sendo a fonte de regra de negocio | Spec de emprestimo ainda pendente | pendente |
 | Prazo de 14 dias uteis | `docs/PRD.md` e a migration V2 usam 14 dias corridos | Manter 14 dias corridos | Evita alterar regra consolidada por um briefing conflitante | Spec de emprestimo ainda pendente | pendente |
 | Esconder todo credito no catalogo | Contrato da API exige indicar a origem | Exibir `Fotos: Pixabay` de forma discreta, sem rodape de card | Cumpre a fonte sem poluir cada item | Spec de catalogo ainda pendente | pendente |
@@ -29,6 +29,7 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 | Skill de imagens | Como repetir o upload sem criar novos objetos | Nome aleatorio; ID da foto; patrimonio | Usar `equipment/<patrimonio>.jpg` | O patrimonio e unico e gera uma chave estavel | `ad2d9af` |
 | Skill de imagens | Como eliminar pessoa, marca, texto e tela | Apenas filtro da API; revisao humana | `safesearch` mais revisao visual bloqueante | A API nao prova os quatro requisitos visuais | `ad2d9af` |
 | Login | Provisionamento, duracao de sessao, usuario inativo e tentativas incorretas | Registradas na Spec 001 | Provisionamento administrativo idempotente; sessao de 8 h por inatividade; inativo indistinguivel de credencial invalida; sem bloqueio na v1; conta de teste separada | Fecha as lacunas sem versionar segredo nem inventar regra de negocio | `052dc17` |
+| Dados iniciais | Como repetir a carga e tratar patrimonio existente | Ignorar colisao, sobrescrever ou recusar divergencia | Proposta na Spec 003. Preservar identidade e estado operacional, preencher chave ausente e recusar divergencia em transacao unica | Evita duplicatas e impede que a carga desfaça emprestimos ou troque fotos ja associadas | Rascunho em `docs/specs/003-dados-iniciais/spec.md` |
 
 ## 2. Onde o agente tentou decidir pelo operador
 
@@ -62,7 +63,7 @@ A Spec 001 passou por tres contextos independentes antes de ser aprovada:
 2. `pre-approval-02-c485d8a.md`: bloqueada por tres lacunas residuais no envelope de sessao, rota de logout e repeticao do ciclo CSRF.
 3. `pre-approval-03-c485d8a.md`: resultado `APROVAVEL`, sem bloqueio e sem criterio nao observavel.
 
-Os relatorios exatos estao em `docs/specs/001-login/verification/`; a spec aprovada foi publicada no commit `052dc17`. A verificacao pos-implementacao e a prova com erro plantado permanecem pendentes porque ainda nao existe implementacao da Spec 001.
+Os relatorios estao em `docs/specs/001-login/verification/`. A spec aprovada foi publicada no commit `052dc17`. A verificacao pos-implementacao e a prova com erro plantado permanecem pendentes.
 
 ## 7. Uma regra que a pratica pos a prova
 
@@ -70,7 +71,9 @@ Os relatorios exatos estao em `docs/specs/001-login/verification/`; a spec aprov
 
 ## 8. O que ficou de fora e o que faria diferente
 
-- A Spec 001 de login esta aprovada e possui plano e tarefas; login real, dados iniciais, catalogo, solicitacao e Meus emprestimos ainda nao foram implementados.
+- O login, a sessao e o logout passaram localmente via Next.js, Spring e PostgreSQL descartavel. O commit `e0cbaca` publica a tela e o encaminhamento same-origin. O fluxo ainda precisa da revisao interativa e da verificacao independente final.
+- A Vercel serve a tela de login com HTTP 200. A rota CSRF retorna HTTP 404 enquanto o frontend de producao aguarda configuracao do backend Spring.
+- A carga inicial, o catalogo, a solicitacao e Meus emprestimos ainda estao pendentes.
 - A chave da Pixabay ainda precisa ser configurada localmente pelo operador; ela nunca sera solicitada no chat nem versionada.
 - Nenhuma migration, imagem ou conta foi aplicada ao Supabase de producao.
-- Docker Desktop estava fechado na auditoria inicial; os testes integrados serao repetidos antes de qualquer spec ser declarada pronta.
+- A suite do backend passou com 15 testes em Docker e PostgreSQL descartavel. O frontend passou em `pnpm run typecheck` e `pnpm run build`. A verificacao final da pratica precisa da matriz no link de producao.
