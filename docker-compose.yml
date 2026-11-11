@@ -47,6 +47,23 @@ services:
     depends_on:
       - backend
 
+  backend-provision:
+    build:
+      context: ./backend
+    profiles: ["provision"]
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/equipamentos}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-equipamentos_app}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-equipamentos_dev}
+      PROVISION_USER_EMAIL: ${PROVISION_USER_EMAIL:-}
+      PROVISION_USER_PASSWORD: ${PROVISION_USER_PASSWORD:-}
+      PROVISION_USER_FULL_NAME: ${PROVISION_USER_FULL_NAME:-}
+      PROVISION_USER_ROLE: ${PROVISION_USER_ROLE:-}
+    command: ["java", "-jar", "app.jar", "--provision-user"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   backend-test:
     build:
       context: ./backend

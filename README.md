@@ -16,6 +16,21 @@ docker compose ps
 
 No teste manual do frontend, confira a busca de equipamentos, os filtros por status e categoria, o menu em tela pequena, a navegacao por teclado do controle segmentado e a abertura do formulario `Novo emprestimo`. Essas interacoes ainda nao persistem dados.
 
+## Criar um usuário de teste local
+
+Defina as quatro variáveis `PROVISION_USER_*` do `.env.example` no ambiente local.
+Use `colaborador` ou `operacoes` como papel e uma senha de pelo menos 12 caracteres,
+limitada a 72 bytes em UTF-8 pelo BCrypt. Execute na raiz do repositório:
+
+```powershell
+docker compose run --build --rm backend-provision
+```
+
+A segunda execução com os mesmos dados retorna sucesso. Se a conta existente
+tiver dados diferentes, o comando retorna código 3 e preserva o registro.
+Para a conta da avaliação em produção, o operador deve executar o provisionamento
+com a configuração do banco de produção e os segredos fora do Git.
+
 ## Testes e checks
 
 Teste de integracao do backend com PostgreSQL real:

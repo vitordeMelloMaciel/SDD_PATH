@@ -29,10 +29,12 @@ Commit sugerido: `feat(login): implement session and CSRF contracts [CA-02,CA-04
 
 ## T003 - Provisionamento administrativo idempotente
 
-- [ ] Implementar servico e modo de comando sem servidor web.
-- [ ] Criar servico Compose `backend-provision`.
-- [ ] Documentar variaveis sem valores reais.
-- [ ] Testar primeira criacao, repeticao, divergencia, validacoes e saida sem segredo.
+- [x] Implementar servico e modo de comando sem servidor web.
+- [x] Criar servico Compose `backend-provision`.
+- [x] Documentar variaveis sem valores reais.
+- [x] Testar primeira criacao, repeticao, divergencia, validacoes e saida sem segredo.
+
+A suite do backend passou com 15 testes. A imagem do comando foi executada tres vezes contra um PostgreSQL temporario e deixou um unico usuario, com codigos 0, 0 e 3.
 
 Atende: CA-07 e CA-08.
 
