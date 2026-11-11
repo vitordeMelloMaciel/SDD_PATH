@@ -44,8 +44,9 @@ deixam exatamente um empréstimo aberto.
   retorna 403 `CSRF_INVALID` quando falta um token válido, mesmo se também
   faltar sessão. Com token válido, retorna 401 `UNAUTHENTICATED` sem sessão e
   403 `FORBIDDEN` para papel sem permissão, conforme o envelope da Spec 001.
-  Se o usuário da sessão deixou de estar ativo ou foi excluído, a solicitação
-  retorna 401 `UNAUTHENTICATED` e encerra a sessão.
+  Nas três rotas, se o usuário da sessão foi desativado ou excluído, a API
+  retorna 401 `UNAUTHENTICATED` e encerra a sessão. No POST a proteção
+  CSRF continua sendo avaliada primeiro.
 - Erros de negócio usam `{code, message}`. Corpo inválido retorna 400
   `INVALID_REQUEST` (“Informe um equipamento válido.”). Equipamento
   inexistente retorna 404 `EQUIPMENT_NOT_FOUND` (“Equipamento não encontrado.”).
@@ -63,6 +64,17 @@ deixam exatamente um empréstimo aberto.
   acessa as três rotas nem as páginas da jornada. Exibir datas em
   `America/Sao_Paulo`, com o vencimento baseado no instante registrado
   pelo banco.
+- Catálogo e Meus empréstimos consultam a sessão no servidor antes de
+  renderizar. Sem sessão, inclusive se a conta foi desativada ou excluída,
+  redirecionam para `/`. Para `operacoes`, mostram apenas acesso negado.
+
+## Decisão em aberto
+
+O ADR-002 prevê pessoa e devolução no rodapé do card emprestado. Proposta
+para o catálogo do colaborador: mostrar “Emprestado a você” e a data somente
+quando o empréstimo pertence à conta da sessão. Nos demais cards emprestados,
+mostrar apenas “Emprestado”. Se aprovada, registrar a exceção no ADR-002 e
+fixar os campos da API e o teste de privacidade.
 
 ## Critérios de aceitação
 
@@ -72,7 +84,7 @@ deixam exatamente um empréstimo aberto.
 | CA-02 | Solicitação válida retorna 201. No PostgreSQL, `due_at` equivale a `loaned_at + interval '14 days'`. O item muda de situação no catálogo e aparece em Meus empréstimos com a data no fuso aprovado. |
 | CA-03 | As quatro recusas 409 retornam os códigos acima, mostram o motivo na interface e não inserem empréstimo. JSON inválido ou UUID ausente/inválido retorna 400. UUID válido inexistente retorna 404. |
 | CA-04 | Em PostgreSQL real, duas solicitações concorrentes ao mesmo item produzem um 201, um 409 `EQUIPMENT_BORROWED` e um empréstimo aberto. Com dois empréstimos já abertos na mesma conta, duas solicitações concorrentes a itens distintos produzem um 201, um 409 `LOAN_LIMIT` e três empréstimos abertos ao final. |
-| CA-05 | Meus empréstimos exclui itens encerrados e de outras contas. Cada rota prova 401 sem sessão e 403 para papel sem permissão. As páginas protegidas não mostram a jornada a `operacoes`. Os testes do POST usam CSRF válido para provar 401 ou 403 de autorização. Token ausente ou inválido retorna 403 `CSRF_INVALID` com e sem sessão. Conta desativada ou excluída durante a sessão recebe 401, não cria empréstimo e perde a sessão em ambos os casos. |
+| CA-05 | Meus empréstimos exclui itens encerrados e de outras contas. Cada rota prova 401 sem sessão e 403 para papel sem permissão. Acesso direto às duas páginas sem sessão redireciona a `/`; `operacoes` vê acesso negado. Os testes do POST usam CSRF válido para provar 401 ou 403 de autorização. Token ausente ou inválido retorna 403 `CSRF_INVALID` com e sem sessão. Para conta desativada ou excluída, cada rota rejeita a sessão, as páginas redirecionam, não é criado empréstimo e uma consulta posterior com o cookie antigo retorna 401. |
 | CA-06 | O operador entra em produção com conta de teste, confere as 12 fotos e a ausência da ação de solicitar em itens em manutenção, solicita item disponível, confirma status emprestado e data em Meus empréstimos e prova recusa ao atingir três. Uma consulta de leitura confirma zero empréstimos abertos ou encerrados para o professor na entrega. |
 
 Fora de escopo: aprovação por Operações, fila, devolução, reserva,
