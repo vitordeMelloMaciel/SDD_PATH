@@ -16,10 +16,13 @@ Commit sugerido: `feat(login): add authenticated user foundation [CA-02,CA-03,CA
 
 ## T002 - Endpoints, sessao, logout e CSRF
 
-- [ ] Implementar os quatro endpoints e corpos definidos na spec.
-- [ ] Configurar cookie de sessao e timeout de inatividade.
-- [ ] Implementar ciclo CSRF e logout publico/idempotente.
+- [x] Implementar os quatro endpoints e corpos definidos na spec.
+- [x] Configurar cookie de sessao e timeout de inatividade.
+- [x] Implementar ciclo CSRF e logout publico/idempotente.
 - [ ] Testar status, payloads, cookies, expiracao e logout repetido.
+
+O fluxo HTTP de login, sessao e logout repetido e a expiracao em oito horas passaram no Docker.
+Ainda faltam os casos HTTP de JSON invalido e credenciais invalidas, e a verificacao do atributo `Secure`.
 
 Atende: CA-02, CA-04, CA-05, CA-06, CA-07, CA-09 e CA-10.
 

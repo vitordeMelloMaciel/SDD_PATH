@@ -2,7 +2,11 @@ package br.org.germinare.equipamentos.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,8 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +39,7 @@ import br.org.germinare.equipamentos.user.UserRole;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthenticationFoundationIntegrationTest {
     private static final String VALID_PASSWORD = "senha-segura-para-teste";
+    private static final Instant LOGIN_TIME = Instant.parse("2026-01-01T00:00:00Z");
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
@@ -53,11 +63,15 @@ class AuthenticationFoundationIntegrationTest {
     @Autowired
     TestRestTemplate restTemplate;
 
+    @MockBean
+    Clock clock;
+
     @LocalServerPort
     int port;
 
     @BeforeEach
     void cleanDatabase() {
+        when(clock.instant()).thenReturn(LOGIN_TIME);
         jdbc.update("delete from loan");
         jdbc.update("delete from equipment");
         jdbc.update("delete from app_user");
@@ -105,6 +119,89 @@ class AuthenticationFoundationIntegrationTest {
             "code", "UNAUTHENTICATED",
             "message", "Sessao invalida ou expirada."
         ));
+    }
+
+    @Test
+    void ca02Ca04Ca05Ca10LoginSessionAndRepeatedLogoutRequireCsrf() {
+        UUID id = createUser("ativa@example.org", VALID_PASSWORD, "Pessoa Ativa", "colaborador", true);
+        var credentials = Map.of("email", "ativa@example.org", "password", VALID_PASSWORD);
+        var denied = authRequest(HttpMethod.POST, "/login", new HttpHeaders(), credentials);
+        assertThat(denied.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(denied.getBody()).containsEntry("code", "CSRF_INVALID");
+
+        var login = authRequest(HttpMethod.POST, "/login", csrfHeaders(null), credentials);
+        assertThat(login.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(login.getBody()).containsOnlyKeys("user");
+        assertThat(login.getBody().get("user")).isEqualTo(Map.of(
+            "id", id.toString(), "fullName", "Pessoa Ativa", "email", "ativa@example.org",
+            "role", "colaborador"
+        ));
+        String setCookie = cookieHeader(login, "SESSION");
+        assertThat(setCookie).contains("HttpOnly", "SameSite=Lax", "Path=/")
+            .doesNotContain("Max-Age", "Expires", VALID_PASSWORD);
+        String sessionCookie = setCookie.split(";", 2)[0];
+        HttpHeaders sessionHeaders = new HttpHeaders();
+        sessionHeaders.set(HttpHeaders.COOKIE, sessionCookie);
+        var session = authRequest(HttpMethod.GET, "/session", sessionHeaders, null);
+        assertThat(session.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(session.getBody()).isEqualTo(login.getBody());
+
+        var logout = authRequest(HttpMethod.POST, "/logout", csrfHeaders(sessionCookie), null);
+        assertThat(logout.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(cookieHeader(logout, "SESSION")).contains("Max-Age=0");
+        assertThat(authRequest(HttpMethod.GET, "/session", sessionHeaders, null).getStatusCode())
+            .isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(authRequest(HttpMethod.POST, "/logout", csrfHeaders(null), null).getStatusCode())
+            .isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    private HttpHeaders csrfHeaders(String sessionCookie) {
+        HttpHeaders headers = new HttpHeaders();
+        if (sessionCookie != null) {
+            headers.set(HttpHeaders.COOKIE, sessionCookie);
+        }
+        var csrf = authRequest(HttpMethod.GET, "/csrf", headers, null);
+        assertThat(csrf.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String csrfCookie = cookieHeader(csrf, "XSRF-TOKEN").split(";", 2)[0];
+        headers.set(HttpHeaders.COOKIE, sessionCookie == null ? csrfCookie : sessionCookie + "; " + csrfCookie);
+        headers.set("X-XSRF-TOKEN", (String) csrf.getBody().get("token"));
+        return headers;
+    }
+
+    @Test
+    void ca09PublicAndRejectedRequestsDoNotExtendTheEightHourSession() {
+        createUser("ativa@example.org", VALID_PASSWORD, "Pessoa Ativa", "colaborador", true);
+        var credentials = Map.of("email", "ativa@example.org", "password", VALID_PASSWORD);
+        var login = authRequest(HttpMethod.POST, "/login", csrfHeaders(null), credentials);
+        assertThat(login.getStatusCode()).isEqualTo(HttpStatus.OK);
+        String sessionCookie = cookieHeader(login, "SESSION").split(";", 2)[0];
+        HttpHeaders sessionHeaders = new HttpHeaders();
+        sessionHeaders.set(HttpHeaders.COOKIE, sessionCookie);
+
+        when(clock.instant()).thenReturn(LOGIN_TIME.plus(Duration.ofHours(7)));
+        assertThat(authRequest(HttpMethod.GET, "/session", sessionHeaders, null).getStatusCode())
+            .isEqualTo(HttpStatus.OK);
+        when(clock.instant()).thenReturn(LOGIN_TIME.plus(Duration.ofHours(14)));
+        csrfHeaders(sessionCookie);
+        assertThat(authRequest(HttpMethod.POST, "/session", sessionHeaders, null).getStatusCode())
+            .isEqualTo(HttpStatus.FORBIDDEN);
+        when(clock.instant()).thenReturn(LOGIN_TIME.plus(Duration.ofHours(15)));
+        var expired = authRequest(HttpMethod.GET, "/session", sessionHeaders, null);
+        assertThat(expired.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(expired.getBody()).containsEntry("code", "UNAUTHENTICATED");
+    }
+
+    private String cookieHeader(ResponseEntity<?> response, String name) {
+        return response.getHeaders().getOrEmpty(HttpHeaders.SET_COOKIE).stream()
+            .filter(cookie -> cookie.startsWith(name + "="))
+            .findFirst()
+            .orElseThrow();
+    }
+
+    private ResponseEntity<Map> authRequest(HttpMethod method, String path, HttpHeaders headers, Object body) {
+        return restTemplate.exchange(
+            "http://localhost:" + port + "/api/auth" + path, method, new HttpEntity<>(body, headers), Map.class
+        );
     }
 
     private void assertAuthenticationRejected(String email, String password) {
