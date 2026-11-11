@@ -9,8 +9,9 @@ alwaysApply: true
 ## Git
 > leitor: agente
 
-- Commit: o agente escreve a mensagem e o operador executa depois de revisar o diff.
-- Push: sempre do operador, em qualquer branch. `main` recebe mudancas por pull request.
+- O agente pode criar branch com prefixo `codex/`, commitar e publicar essa branch depois de rodar os checks e mostrar o resumo do diff ao operador.
+- `main` recebe mudancas somente por pull request. O merge continua sendo do operador, depois de revisar o diff e os checks.
+- O agente nunca faz push direto em `main`, nunca reescreve historico remoto e nunca cria tag de entrega sem autorizacao especifica.
 - A mensagem de commit cita a tarefa e o criterio de aceitacao, quando existir.
 - Um commit por tarefa. Nunca junte codigo e mudanca de regra no mesmo commit.
 

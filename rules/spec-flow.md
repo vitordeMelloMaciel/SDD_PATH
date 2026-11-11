@@ -17,9 +17,11 @@ Ao iniciar qualquer funcionalidade nova do PRD.
 4. Depois da aprovacao humana, escreva `plan.md` a partir da spec e cite os ADRs que o restringem.
 5. Escreva `tasks.md`; cada tarefa cita um `CA-xx` e cabe em um commit.
 6. Apos aprovacao, execute conforme a autoridade de `rules/restrictions.md` e finalize seguindo `rules/checks.md`.
+7. Depois da implementacao e dos testes, execute o `spec-validator` novamente, em contexto limpo, no modo `verificacao`. Copie sem alterar o resultado para `verification/<rodada>-<commit>.md`.
+8. Se a rodada reprovar algum criterio, o agente principal corrige e abre uma nova rodada. O verificador nunca corrige codigo ou teste.
 
 ## Verificacao
-A spec aprovada tem resultado `APROVAVEL` do `spec-validator`; a pasta da funcionalidade contem `spec.md`, `plan.md` e `tasks.md`; cada tarefa aponta para pelo menos um `CA-xx`.
+A spec aprovada tem resultado `APROVAVEL` do `spec-validator`; a pasta da funcionalidade contem `spec.md`, `plan.md` e `tasks.md`; cada tarefa aponta para pelo menos um `CA-xx`. Uma spec implementada tambem tem uma rodada final `APROVADA` em `verification/`, com uma linha por criterio e evidencia reproduzivel.
 
 ## Nao faca
 - Nao crie pasta fora do padrao `NNN-nome-curto`.

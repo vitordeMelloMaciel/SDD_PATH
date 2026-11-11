@@ -7,6 +7,6 @@ max_concurrent_threads_per_session = 1
 max_depth = 1
 
 [agents.spec-validator]
-description = "Valida uma spec contra PRD, ADRs e regras sem editar arquivos nem aprovar decisoes pelo operador."
+description = "Valida specs e confere implementacoes contra criterios de aceite sem editar arquivos."
 config_file = "agents/spec-validator.toml"
 nickname_candidates = ["Spec Check"]
