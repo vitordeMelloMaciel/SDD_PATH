@@ -9,6 +9,16 @@ export type SessionUser = {
   role: 'colaborador' | 'operacoes';
 };
 
+/** Item de `GET /api/equipment`: exatamente os seis campos públicos (Spec 004, CA-07). */
+export type Equipment = {
+  id: string;
+  assetCode: string;
+  name: string;
+  category: string;
+  status: 'disponivel' | 'manutencao' | 'emprestado';
+  imageUrl: string | null;
+};
+
 export type PageGate =
   | { kind: 'collaborator'; user: SessionUser; sessionCookie: string }
   | { kind: 'denied' }
@@ -48,4 +58,16 @@ export async function requireCollaboratorPage(): Promise<PageGate> {
   if (!body.user) redirect('/');
   if (body.user.role !== 'colaborador') return { kind: 'denied' };
   return { kind: 'collaborator', user: body.user, sessionCookie };
+}
+
+/**
+ * Lê uma rota da jornada no servidor. Um 401 (sessão encerrada no meio do
+ * caminho) volta para `/`. Qualquer outra falha vira `null`, e a página
+ * mostra o estado de indisponível.
+ */
+export async function loadJourneyData<T>(path: '/api/equipment' | '/api/loans/me', sessionCookie: string): Promise<T | null> {
+  const response = await backendFetch(path, sessionCookie);
+  if (response?.status === 401) redirect('/');
+  if (!response?.ok) return null;
+  return await response.json() as T;
 }

@@ -2,8 +2,12 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
+import type { Equipment } from '@/lib/loan-api';
+import { EquipmentPhotoCard } from './equipment-card';
 import { Button } from './ui/button';
+
+const cardStatus = { disponivel: 'available', emprestado: 'borrowed', manutencao: 'maintenance' } as const;
 
 type Page = 'catalogo' | 'meus-emprestimos';
 
@@ -47,6 +51,76 @@ export function LoanPageFrame({ title, current, children }: { title: string; cur
       <h1 className="mb-5 text-[24px] font-semibold">{title}</h1>
       {children}
     </main>
+  );
+}
+
+/**
+ * Catálogo (Spec 004, CA-01, CA-03 e CA-07). A tela só mostra o estado que a
+ * API devolveu: depois do 201 ou de um 409, recarrega os dados do servidor e
+ * não guarda estado local de empréstimo nem data.
+ */
+export function Catalog({ equipment }: { equipment: Equipment[] }) {
+  const router = useRouter();
+  const busy = useRef(false);
+  const [pending, setPending] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ error: boolean; text: string } | null>(null);
+
+  async function request(item: Equipment) {
+    if (busy.current) return;
+    busy.current = true;
+    setPending(item.id);
+    setNotice(null);
+    try {
+      const response = await fetch('/api/loans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': await csrfToken() },
+        body: JSON.stringify({ equipmentId: item.id }),
+        cache: 'no-store',
+      });
+      if (response.status === 401) {
+        router.replace('/');
+        return;
+      }
+      if (response.status === 201) {
+        setNotice({ error: false, text: 'Empréstimo registrado. Consulte a data de devolução em Meus empréstimos.' });
+      } else {
+        const failure = await response.json().catch(() => null) as { message?: string } | null;
+        setNotice({ error: true, text: failure?.message ?? 'Não foi possível solicitar o equipamento.' });
+      }
+      router.refresh();
+    } catch {
+      setNotice({ error: true, text: 'Não foi possível solicitar o equipamento. Tente novamente.' });
+    } finally {
+      busy.current = false;
+      setPending(null);
+    }
+  }
+
+  return (
+    <>
+      {notice && (
+        <p role={notice.error ? 'alert' : 'status'} className={`mb-5 ${notice.error ? 'text-overdue' : 'text-available'}`}>{notice.text}</p>
+      )}
+      {equipment.length === 0 ? <p className="text-borrowed">Nenhum equipamento no acervo.</p> : (
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {equipment.map((item) => (
+            <li key={item.id} className="grid">
+              <EquipmentPhotoCard
+                name={item.name}
+                assetCode={item.assetCode}
+                category={item.category}
+                status={cardStatus[item.status]}
+                imageUrl={item.imageUrl}
+                requesting={pending === item.id}
+                disabled={pending !== null}
+                onRequest={item.status === 'disponivel' ? () => request(item) : undefined}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-6 text-xs text-borrowed"><a href="https://pixabay.com/" className="underline">Fotos: Pixabay</a></p>
+    </>
   );
 }
 

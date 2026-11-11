@@ -129,10 +129,10 @@ Commit sugerido: `feat(catalog): gate journey pages by session and role [CA-05,C
 
 ## T007 · CA-01, CA-03 e CA-07 (interface). Catálogo com fotos
 
-- [ ] Variante com foto do `EquipmentCard` (ADR-002) no lugar do ícone: 4:3, `--gradient-equipment`, `object-fit: cover`, e “Foto indisponível” sem URL ou em falha de carregamento.
-- [ ] Rodapés: “Solicitar →” nos disponíveis, “Em manutenção”, e “Emprestado” para todas as contas, inclusive a do titular, sem nome nem data.
-- [ ] Solicitar com CSRF, mostrar a `message` de qualquer 409 e recarregar o estado da API, sem estado otimista com data.
-- [ ] Crédito único “Fotos: Pixabay”, com link para a Pixabay.
+- [x] Variante com foto do `EquipmentCard` (ADR-002) no lugar do ícone: 4:3, `--gradient-equipment`, `object-fit: cover`, e “Foto indisponível” sem URL ou em falha de carregamento.
+- [x] Rodapés: “Solicitar →” nos disponíveis, “Em manutenção”, e “Emprestado” para todas as contas, inclusive a do titular, sem nome nem data.
+- [x] Solicitar com CSRF, mostrar a `message` de qualquer 409 e recarregar o estado da API, sem estado otimista com data.
+- [x] Crédito único “Fotos: Pixabay”, com link para a Pixabay.
 - [ ] Conferência no navegador: contas A e B (CA-07), os três itens em manutenção, `EQUIPMENT_BORROWED` e `LOAN_LIMIT` provocados (proposta 2 do plano).
 
 Código local:
