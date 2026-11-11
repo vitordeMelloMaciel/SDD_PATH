@@ -12,7 +12,7 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 
 | Requisito do HTML | Estado e evidência |
 | --- | --- |
-| Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (três) e 004 (rodadas 05 a 07). A verificação final e a prova com erro plantado seguem pendentes. |
+| Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (três) e 004 (rodadas 05 a 07). Prova com erro plantado feita na Spec 004 (`planted-01`, `f443b97`). A verificação final da Spec 004 (`verif-01`) reprovou por falta de evidência de navegador, fotos e produção. As verificações finais das Specs 001 e 003 seguem pendentes. |
 | Skill de imagens | API da Pixabay e busca em lotes executadas. Quatro fotos aprovadas, oito pendentes. Commits `ad2d9af` e `9277a10`. |
 | Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. V3 (`65ee264`, T001) e V4 com a carga dos 12 itens (`a46cbd7`, T002) e composição de `EQUIPMENT_IMAGE_BASE_URL` (`d16a3e6`, T006) commitadas; suíte com 31 testes passando. Em produção, em 2026-11-11: V1 a V4 aplicadas pelo backend no Railway, 12 itens (9 disponíveis e 3 em manutenção) e conta de avaliação provisionada com 0 empréstimos (`479d774`). Manifesto completo e upload das fotos pendentes. |
 | Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. Spec 004 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-07-8d40630` (`b0046fa`); plano e tarefas pendentes. Catálogo, API e jornada da prática pendentes. |
@@ -134,8 +134,22 @@ As três rodadas da Spec 001 rodaram pelo Codex CLI, como registra o cabeçalho 
 | 003 | `pre-approval-01-94a8197` | BLOQUEADA | CA-02; estado da spec, sem CA | O cabeçalho citava uma rodada `pre-approval-03` inexistente, e o CA-02 não definia ambiente, mecanismo nem executor da repetição da carga | `a726f85` |
 | 004 | `pre-approval-05-94a8197` | BLOQUEADA | Card emprestado (originou o CA-07); estado da spec, sem CA | Spec divergente do ADR-002 no rodapé do card emprestado, falta de contrato e de CA de privacidade, e cabeçalho “confirmado” com uma decisão em aberto | `212f0f8` |
 | 004 | `plan-01-c52ae79` (`plan.md` e `tasks.md`) | BLOQUEADA | CA-02, CA-03, CA-04 e CA-07 (tarefas de API); CA-05 | O plano atribuía ao ADR-001 o acesso por `JdbcTemplate` com SQL no service, mas o ADR-001 escolhe Spring Data JPA e descarta SQL em services. Além disso, conta desativada ou excluída não era detectada por `GET /api/auth/session` nem antes da checagem de papel nas rotas | `f8ef24b` |
+| 004 | `verif-01-9839b43` (pós-implementação) | REPROVADA | CA-01, CA-02, CA-03, CA-05, CA-06 e CA-07; o CA-04 foi aprovado | Faltam a conferência manual no navegador, as 12 fotos da Spec 003 e o roteiro do CA-06 em produção. O verificador não apontou falha de código nem de teste | `e06194d` |
+| 004 | `planted-01-1480b2e` (erro plantado) | REPROVADA | CA-07 | Erro deliberado: `GET /api/equipment` expunha `borrowerName` para qualquer conta | `f443b97` |
 
 A rodada `plan-02-ad56229` conferiu o `plan.md` e o `tasks.md` corrigidos e retornou `APROVAVEL`, sem bloqueios (`9be0306`). O acesso ao banco passou a seguir o ADR-001 (JPA/Hibernate). Um filtro de conta ativa, depois do CSRF e antes da autorização, passou a cobrir o CA-05. Sete perguntas do verificador aguardam a decisão do operador antes da implementação.
+
+### Prova com erro plantado (Spec 004)
+
+O teste foi feito numa branch descartável, `erro-plantado-ca07`, criada a partir da `main` em `e06194d`. A branch ficou só local: não foi incorporada à `main` nem enviada ao GitHub.
+
+| Etapa | Commit | Resultado |
+| --- | --- | --- |
+| Erro plantado | `1480b2e` | `GET /api/equipment` passou a expor `borrowerName`, o nome de quem tem o item emprestado, para qualquer conta. Isso contraria o CA-07. O comentário antigo, que dizia que a resposta “não lê empréstimos”, foi mantido para não dar pista. A suíte deu 58 testes e 2 falhas: `ca01ListsTheWholeCatalog…` e `ca07BorrowedItemIsTheSameObject…` |
+| Verificador, sem saber onde estava o erro | — | REPROVADA no CA-07, citando o campo extra, o vazamento do nome e o comentário enganoso. Ele previu exatamente os dois testes que falharam. O relatório está em `docs/specs/004-catalogo-emprestimos/verification/planted-01-1480b2e.md` (`f443b97`) |
+| Correção | `13570f1` | Reverte `1480b2e`. O código ficou idêntico ao da `main` e a suíte deu 58 testes, 0 falhas |
+
+Na primeira tentativa de correção, o agente errou o comando. O `git revert` não criou o commit, e o `git commit --amend` só trocou a mensagem do commit do erro. A suíte reprovou de novo e mostrou o problema. A branch então voltou para `1480b2e`, e um revert de verdade virou `13570f1`. Tudo isso aconteceu só na branch descartável.
 
 ## 7. Uma regra que a pratica pos a prova
 
