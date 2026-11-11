@@ -1,12 +1,12 @@
 # Spec 003 — Dados iniciais do acervo
 
-**Estado** · Em revisão de pré-aprovação. A rodada `pre-approval-01-94a8197`
-retornou `BLOQUEADA`; os bloqueios foram tratados nesta versão e aguardam nova
-rodada. A versão anterior deste cabeçalho citava uma rodada `pre-approval-03`
-com base `e0cbaca`, que não existe para esta spec: aquele relatório pertence à
-Spec 001. A aprovação humana deve ser renovada após uma rodada `APROVAVEL`.
-`plan.md` e `tasks.md` foram escritos antes dessa rodada e precisam ser
-reconfirmados pelo operador depois da aprovação.
+**Estado** · Aprovada pelo operador em 2026-11-11, após `APROVAVEL` na rodada
+`pre-approval-03-8d40630`. O operador também aprovou `plan.md`, `tasks.md` e o
+DDL da V3 (`ALTER TABLE equipment ADD COLUMN image_object_key varchar(255)`).
+A V4 ainda não foi aprovada. Histórico: a rodada `pre-approval-01-94a8197`
+retornou `BLOQUEADA`, e a `pre-approval-02-94a8197`, `APROVAVEL`. Uma versão
+anterior deste cabeçalho citava uma rodada `pre-approval-03` com base `e0cbaca`,
+que não existe para esta spec: aquele relatório pertence à Spec 001.
 
 **Referências** · PRD itens 1 e 2, briefing de dados iniciais da prática, ADR-001,
 Spec 002 (schema), Spec 001 (provisionamento) e skill `imagens-equipamentos`.
@@ -70,8 +70,9 @@ provisionar a conta de avaliação, que deve chegar à correção com zero empr�
 - O frontend usa a mesma variável no `next.config.ts` apenas para autorizar
   essa origem e esse caminho no otimizador de imagens. Sem a variável, nenhuma
   origem remota é autorizada.
-- A variável deve constar em `.env.example` sem valor real, conforme
-  `rules/secrets.md`, na tarefa que a implementar.
+- Implementar a variável no backend, no `next.config.ts` e em `.env.example`
+  (sem valor real, conforme `rules/secrets.md`) é tarefa desta spec, porque é
+  ela que define o bucket e as chaves. A Spec 004 só consome a URL pronta.
 
 ### Repetição da carga
 
@@ -98,8 +99,8 @@ provisionar a conta de avaliação, que deve chegar à correção com zero empr�
 | --- | --- | --- |
 | CA-01 | PostgreSQL descartável migrado contém os 12 patrimônios com nome, categoria e chave da foto esperados. Há três itens em manutenção e nove disponíveis inicialmente. Na primeira carga em produção, uma leitura antes e outra após confirmam os dados dos 12 patrimônios. Para cada item inserido, a situação confere com a referência. Para cada item preexistente, a situação confere com a leitura anterior. | Teste de integração em `backend/src/test/java/`; leituras de produção em `docs/specs/003-dados-iniciais/verification/producao-<AAAA-MM-DD>.md`. |
 | CA-02 | O mesmo arquivo `V4__carga_inicial_equipamentos.sql` é executado de novo conforme “Repetição da carga”, no teste e em produção. A repetição preserva IDs, registros fora da lista e empréstimos, incluindo o status emprestado. Uma foto ausente é preenchida. O teste cobre ao menos três colisões em itens preexistentes: nome divergente, categoria divergente e chave de foto divergente. Cada colisão encerra com erro, e a tabela `equipment` fica igual à leitura anterior. Em produção, o `psql` retorna código 0 e a leitura posterior é igual à anterior. | Teste de integração em `backend/src/test/java/`; em produção, comando, código de saída e leituras antes e depois em `verification/producao-<AAAA-MM-DD>.md`. |
-| CA-03 | O manifesto cobre 12 patrimônios com IDs e hashes únicos. Cada JPEG tem 800 × 600, crédito e aprovação visual registrados. | `final-manifest.json` e `approvals.json` da skill, copiados sem alteração para `docs/specs/003-dados-iniciais/verification/manifesto/`. A cópia não contém chave de API. |
-| CA-04 | Cada URL pública `EQUIPMENT_IMAGE_BASE_URL/equipment/<patrimônio>.jpg` retorna 200, JPEG com 800 × 600 e SHA-256 igual ao manifesto. A listagem do prefixo `equipment/` após repetir o upload tem exatamente as 12 chaves `equipment/TI-0001.jpg` a `equipment/TI-0012.jpg`, sem outro objeto. | Saída das requisições e da listagem, com data e hora em `America/Sao_Paulo`, em `verification/producao-<AAAA-MM-DD>.md`. |
+| CA-03 | O manifesto cobre 12 patrimônios com IDs e hashes únicos. Cada JPEG tem 800 × 600, crédito e aprovação visual registrados. | `final-manifest.json` e `approvals.json` da skill, copiados sem alteração para `docs/specs/003-dados-iniciais/verification/manifesto/`. O campo do revisor (`reviewer` e `reviewedBy`) contém somente o nome de quem revisou, sem e-mail; esse nome é a evidência da revisão visual. A cópia não contém chave de API. |
+| CA-04 | Cada URL pública `EQUIPMENT_IMAGE_BASE_URL/equipment/<patrimônio>.jpg` retorna 200, JPEG com 800 × 600 e SHA-256 igual ao manifesto. A listagem do prefixo `equipment/` após repetir o upload tem exatamente as 12 chaves `equipment/TI-0001.jpg` a `equipment/TI-0012.jpg`, sem outro objeto. Com `EQUIPMENT_IMAGE_BASE_URL` configurada, a URL que o backend monta para cada patrimônio é igual a essa URL pública. Sem a variável ou sem chave, a URL montada é `null`. O `.env.example` declara a variável sem valor real. | Requisições e listagem, com data e hora em `America/Sao_Paulo`, em `verification/producao-<AAAA-MM-DD>.md`. Composição da URL em teste automatizado em `backend/src/test/java/`. |
 | CA-05 | No dia da entrega para correção, a conta de avaliação está ativa como colaborador e tem o nome completo aprovado. Uma consulta conta zero empréstimos abertos ou encerrados para a conta. O operador confirma o login no deploy sem solicitar item nessa conta. | Consulta SQL de leitura, resultado e data e hora em `America/Sao_Paulo` em `verification/producao-<AAAA-MM-DD>.md`, sem senha nem hash. |
 | CA-06 | O diff, a migration, o manifesto e a documentação versionada não contêm senha, chave, token ou hash de senha da conta de avaliação. | Busca no diff registrada na rodada final de verificação. |
 
