@@ -68,7 +68,7 @@ function contributorProfile(hit) {
   return `https://pixabay.com/users/${encodeURIComponent(hit.user)}-${hit.user_id}/`;
 }
 
-async function search(workDirectory) {
+async function search(workDirectory, nextBatch = false) {
   const apiKey = process.env.PIXABAY_API_KEY;
   if (!apiKey) throw new Error('Defina PIXABAY_API_KEY no ambiente; nao passe a chave na linha de comando.');
 
@@ -79,14 +79,30 @@ async function search(workDirectory) {
   await mkdir(candidateDirectory, { recursive: true });
   const usedIds = new Set();
   const manifest = [];
+  const manifestFile = path.join(workDirectory, 'candidate-manifest.json');
+  const approvalsFile = path.join(workDirectory, 'approvals.json');
+  const previous = nextBatch ? await readJson(manifestFile) : [];
+  const priorByAsset = new Map(previous.map((item) => [item.assetCode, item.candidates]));
+  const selected = new Set(nextBatch
+    ? (await readJson(approvalsFile)).filter((entry) =>
+        entry.pixabayId && entry.reviewer?.trim() && visualChecks.every((check) => entry.checks?.[check] === true)
+      ).map((entry) => entry.assetCode)
+    : []);
+  for (const item of previous) {
+    for (const candidate of item.candidates) usedIds.add(candidate.pixabayId);
+  }
 
   for (const item of equipment) {
+    const candidates = priorByAsset.get(item.assetCode) ?? [];
+    if (selected.has(item.assetCode)) {
+      manifest.push({ ...item, candidates });
+      continue;
+    }
     const body = await cachedSearch(item, cacheDirectory, apiKey);
     const hits = (body.hits ?? []).filter((hit) => !usedIds.has(hit.id)).slice(0, 3);
-    if (hits.length < 3) throw new Error(`Menos de tres candidatos unicos para ${item.assetCode}.`);
+    if (!nextBatch && hits.length < 3) throw new Error(`Menos de tres candidatos unicos para ${item.assetCode}.`);
     const itemDirectory = path.join(candidateDirectory, item.assetCode);
     await mkdir(itemDirectory, { recursive: true });
-    const candidates = [];
 
     for (const hit of hits) {
       usedIds.add(hit.id);
@@ -104,11 +120,11 @@ async function search(workDirectory) {
         licenseUrl: 'https://pixabay.com/service/license-summary/',
       });
     }
+    if (nextBatch) console.log(`${item.assetCode}: ${hits.length} candidatos novos.`);
     manifest.push({ ...item, candidates });
   }
 
-  await writeJson(path.join(workDirectory, 'candidate-manifest.json'), manifest);
-  const approvalsFile = path.join(workDirectory, 'approvals.json');
+  await writeJson(manifestFile, manifest);
   try {
     await stat(approvalsFile);
   } catch (error) {
@@ -189,5 +205,6 @@ const command = process.argv[2];
 const workDirectory = option('--work-dir', defaultWorkDirectory);
 
 if (command === 'search') await search(workDirectory);
+else if (command === 'search-next') await search(workDirectory, true);
 else if (command === 'finalize') await finalize(workDirectory);
-else throw new Error('Use: prepare-images.mjs <search|finalize> [--work-dir caminho]');
+else throw new Error('Use: prepare-images.mjs <search|search-next|finalize> [--work-dir caminho]');

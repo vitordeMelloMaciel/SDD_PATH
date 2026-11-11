@@ -20,6 +20,8 @@ Prepare imagens rastreaveis e repetiveis sem escrever em producao.
 2. Na raiz do repositorio, rode `node .agents/skills/imagens-equipamentos/scripts/prepare-images.mjs search`.
 3. Revise visualmente todos os candidatos em `.local/pixabay-equipment/candidates/`.
 4. Reprove qualquer foto com pessoa, marca ou logo legivel, texto, ou tela com conteudo. Nao presuma que a busca ou `safesearch` prova esses requisitos.
+   Para revisar outro lote da mesma busca, use `search-next`. Ele baixa ate
+   tres resultados novos por item sem aprovacao e preserva o manifesto anterior.
 5. Preencha `.local/pixabay-equipment/approvals.json` com um candidato por patrimonio, o revisor e os quatro controles visuais.
 6. Rode `node .agents/skills/imagens-equipamentos/scripts/prepare-images.mjs finalize`.
 7. Confira o manifesto final, dimensoes, hashes e ausencia de IDs repetidos antes de propor seed ou upload.
@@ -36,7 +38,7 @@ Prepare imagens rastreaveis e repetiveis sem escrever em producao.
 ## Pare e devolva ao operador
 
 - chave ausente ou API indisponivel;
-- nenhum candidato que passe na revisao visual;
+- nenhum candidato que passe na revisao visual apos esgotar os lotes;
 - pedido para usar outra fonte, hotlink permanente ou imagem repetida;
 - pedido para enviar arquivos ao banco, Storage ou deploy;
 - necessidade de instalar dependencia diferente da registrada no lockfile.

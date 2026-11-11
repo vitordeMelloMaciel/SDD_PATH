@@ -15,7 +15,8 @@ Fonte oficial: <https://pixabay.com/api/docs/>
 - `orientation=horizontal`.
 - `safesearch=true`.
 - `min_width=800` e `min_height=600`.
-- `per_page=20`; somente tres candidatos unicos sao baixados para revisao.
+- `per_page=20`; ate tres candidatos unicos sao baixados por lote de revisao.
+  Lotes seguintes reaproveitam a resposta em cache e excluem IDs ja baixados.
 
 ## Limites que alteram o fluxo
 
