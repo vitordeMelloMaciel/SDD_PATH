@@ -70,6 +70,8 @@ Na implementação da T001 e da T002, o agente fez duas escolhas técnicas que o
 - O `docker compose run --rm backend-test` copia `backend/src` inteiro para a imagem, inclusive o código não rastreado da 004. Para o resultado refletir exatamente cada commit, a suíte rodou num git worktree limpo do commit, com o mesmo comando.
 - A V4 usa `set image_object_key = excluded.image_object_key` no lugar de `coalesce(equipment.image_object_key, excluded.image_object_key)`, como estava no rascunho. As duas formas são equivalentes, porque o `where equipment.image_object_key is null` só atualiza linhas sem chave.
 
+No ADR-003, o agente escreveu duas afirmações sobre o Railway sem fonte: que o serviço não é suspenso por inatividade e que o teste não exige cartão. O operador pediu para retirá-las e informou os limites do teste: 1 GB de memória, 30 dias e US$ 5 de crédito (`580dc2b`).
+
 ## 3. Uma decisao que merece ou nao um ADR
 
 O operador escolheu o Railway para hospedar o backend Spring, registrado no
@@ -126,4 +128,5 @@ Depois das respostas do operador às perguntas das rodadas, as duas specs mudara
 - A carga inicial, o catalogo, a solicitacao e Meus emprestimos ainda estao pendentes.
 - A chave da Pixabay esta configurada localmente. O arquivo `.env` esta ignorado pelo Git.
 - Nenhuma migration, imagem ou conta foi aplicada ao Supabase de producao.
+- A imagem final do `backend/Dockerfile`, construída a partir de `7c4a10b`, foi validada localmente em 2026-11-11, com limite de 1 GB e um PostgreSQL descartável. O Flyway aplicou V1 a V4 e carregou os 12 itens. O Spring subiu em 11,6 s, e o `/health` respondeu HTTP 200 com banco `up` em 14,8 s após o `docker run`. O uso de memória foi de cerca de 270 MiB, e o cookie saiu com `Secure` com `SESSION_COOKIE_SECURE=true`.
 - A suite do backend passou com 15 testes em Docker e PostgreSQL descartavel. O frontend passou em `pnpm run typecheck` e `pnpm run build`. A verificacao final da pratica precisa da matriz no link de producao.
