@@ -14,9 +14,9 @@ Documento progressivo. Itens ainda nao executados permanecem marcados como pende
 | --- | --- |
 | Subagente verificador | Configuração somente leitura em `.codex/agents/spec-validator.toml`; rodadas de pré-aprovação registradas nas Specs 001 (três), 003 (três) e 004 (rodadas 05 a 07). A verificação final e a prova com erro plantado seguem pendentes. |
 | Skill de imagens | API da Pixabay e busca em lotes executadas. Quatro fotos aprovadas, oito pendentes. Commits `ad2d9af` e `9277a10`. |
-| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. V3 (`65ee264`, T001) e V4 com a carga dos 12 itens (`a46cbd7`, T002) e composição de `EQUIPMENT_IMAGE_BASE_URL` (`d16a3e6`, T006) commitadas; suíte com 31 testes passando. Manifesto completo, upload, aplicação em produção e conta de avaliação pendentes. |
+| Dados iniciais | Os 12 equipamentos conferem com a lista exata da prática. Spec 003 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-03-8d40630` (`42acd95`), com `plan.md`, `tasks.md` e o DDL da V3. V3 (`65ee264`, T001) e V4 com a carga dos 12 itens (`a46cbd7`, T002) e composição de `EQUIPMENT_IMAGE_BASE_URL` (`d16a3e6`, T006) commitadas; suíte com 31 testes passando. Em produção, em 2026-11-11: V1 a V4 aplicadas pelo backend no Railway, 12 itens (9 disponíveis e 3 em manutenção) e conta de avaliação provisionada com 0 empréstimos (`479d774`). Manifesto completo e upload das fotos pendentes. |
 | Solicitação e Meus empréstimos | A migration V2 já protege o limite, atraso e disponibilidade no banco. Spec 004 aprovada pelo operador em 2026-11-11 após a rodada `pre-approval-07-8d40630` (`b0046fa`); plano e tarefas pendentes. Catálogo, API e jornada da prática pendentes. |
-| Entrega e link de produção | Tela de login publicada. Fluxo local validado com conta descartável. A API pública ainda retorna 404, por isso a jornada de produção e a tag final seguem pendentes. |
+| Entrega e link de produção | Tela de login publicada. Em 2026-11-11, o backend no Railway respondeu `/health` com banco `up`, e a Vercel respondeu HTTP 200 em `/api/auth/csrf` (antes, 404). Login em produção confirmado com a conta de teste do operador (`479d774`). Catálogo, Meus empréstimos e a tag final seguem pendentes. |
 
 Os oito testes de autenticação passaram no Docker, incluindo os casos de CSRF
 ausente, inválido e antigo (`a932cce`) e a conferência de senha e hash fora
@@ -128,9 +128,9 @@ Depois das respostas do operador às perguntas das rodadas, as duas specs mudara
 ## 8. O que ficou de fora e o que faria diferente
 
 - O login, a sessao e o logout passaram localmente via Next.js, Spring e PostgreSQL descartavel. O commit `e0cbaca` publica a tela e o encaminhamento same-origin. O fluxo ainda precisa da revisao interativa e da verificacao independente final.
-- A Vercel serve a tela de login com HTTP 200. A rota CSRF retorna HTTP 404 enquanto o frontend de producao aguarda configuracao do backend Spring.
+- A Vercel serve a tela de login com HTTP 200. Em 2026-11-11, `/api/auth/csrf` passou a responder HTTP 200, encaminhado ao backend no Railway; antes respondia 404 (`479d774`).
 - A carga inicial, o catalogo, a solicitacao e Meus emprestimos ainda estao pendentes.
 - A chave da Pixabay esta configurada localmente. O arquivo `.env` esta ignorado pelo Git.
-- Nenhuma migration, imagem ou conta foi aplicada ao Supabase de producao.
+- Em 2026-11-11, o primeiro deploy do backend aplicou V1 a V4 no Supabase de produção. O operador provisionou a conta de avaliação e a sua conta de teste, as duas com 0 empréstimos. Nenhuma imagem foi enviada ao Storage. A evidência está em `docs/specs/003-dados-iniciais/verification/producao-2026-11-11.md` (`479d774`).
 - A imagem final do `backend/Dockerfile`, construída a partir de `7c4a10b`, foi validada localmente em 2026-11-11, com limite de 1 GB e um PostgreSQL descartável. O Flyway aplicou V1 a V4 e carregou os 12 itens. O Spring subiu em 11,6 s, e o `/health` respondeu HTTP 200 com banco `up` em 14,8 s após o `docker run`. O uso de memória foi de cerca de 270 MiB, e o cookie saiu com `Secure` com `SESSION_COOKIE_SECURE=true`.
 - A suite do backend passou com 15 testes em Docker e PostgreSQL descartavel. O frontend passou em `pnpm run typecheck` e `pnpm run build`. A verificacao final da pratica precisa da matriz no link de producao.
