@@ -37,6 +37,11 @@ final class LoanRejection extends RuntimeException {
         return new LoanRejection(HttpStatus.CONFLICT, "OVERDUE_LOAN", "Você tem um empréstimo em atraso.");
     }
 
+    /** Rejeição inesperada do banco, sem empréstimo criado (decisão do operador no plano). */
+    static LoanRejection internalError() {
+        return new LoanRejection(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "Não foi possível registrar o empréstimo.");
+    }
+
     /** Conta desativada ou excluída descoberta sob bloqueio (Spec 004, spec.md:77-79). */
     static LoanRejection inactiveAccount() {
         return new LoanRejection(HttpStatus.UNAUTHORIZED, "UNAUTHENTICATED", "Sessao invalida ou expirada.");

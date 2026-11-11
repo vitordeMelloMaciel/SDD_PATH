@@ -74,9 +74,9 @@ Commit sugerido: `feat(loans): request loans with locked checks and list my loan
 
 ## T004 · CA-04. Concorrência
 
-- [ ] Teste: duas solicitações concorrentes ao mesmo item produzem um 201, um 409 `EQUIPMENT_BORROWED` e um empréstimo aberto.
-- [ ] Teste: com dois empréstimos abertos na mesma conta, duas solicitações concorrentes a itens distintos produzem um 201, um 409 `LOAN_LIMIT` e três abertos ao final.
-- [ ] Só se a proposta 1 do plano for aprovada: tratar a rejeição inesperada do banco.
+- [x] Teste: duas solicitações concorrentes ao mesmo item produzem um 201, um 409 `EQUIPMENT_BORROWED` e um empréstimo aberto.
+- [x] Teste: com dois empréstimos abertos na mesma conta, duas solicitações concorrentes a itens distintos produzem um 201, um 409 `LOAN_LIMIT` e três abertos ao final.
+- [x] Só se a proposta 1 do plano for aprovada: tratar a rejeição inesperada do banco.
 
 Código local:
 - **Cobre:** o teste do mesmo item (no teste local de autenticação).

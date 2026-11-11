@@ -3,6 +3,8 @@ package br.org.germinare.equipamentos.loan;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ import jakarta.persistence.EntityManager;
  */
 @Service
 class LoanService {
+    private static final String OPEN_LOAN_INDEX = "uq_loan_open_equipment";
+
     private final AppUserRepository users;
     private final EquipmentRepository equipment;
     private final LoanRepository loans;
@@ -58,8 +62,30 @@ class LoanService {
             throw LoanRejection.overdueLoan();
         }
 
-        Loan loan = loans.saveAndFlush(new Loan(borrowerId, equipmentId));
+        Loan loan;
+        try {
+            loan = loans.saveAndFlush(new Loan(borrowerId, equipmentId));
+        } catch (DataAccessException rejected) {
+            throw unexpectedRejection(rejected);
+        }
         entityManager.refresh(loan);
         return new LoanView(loan.id(), item.assetCode(), item.name(), loan.dueAt(), false);
+    }
+
+    /**
+     * Rejeição do banco depois da leitura sob bloqueio (decisão do operador,
+     * plano da Spec 004). A violação de `uq_loan_open_equipment` é
+     * identificada pelo SQLState e pelo nome da constraint, nunca pelo texto.
+     * A exceção desfaz a transação, e nenhum empréstimo é criado.
+     */
+    private static LoanRejection unexpectedRejection(DataAccessException rejected) {
+        for (Throwable cause = rejected; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ConstraintViolationException violation
+                && "23505".equals(violation.getSQLState())
+                && OPEN_LOAN_INDEX.equals(violation.getConstraintName())) {
+                return LoanRejection.borrowed();
+            }
+        }
+        return LoanRejection.internalError();
     }
 }
