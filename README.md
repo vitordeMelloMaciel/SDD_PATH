@@ -14,7 +14,16 @@ docker compose ps
 - Frontend: `http://localhost:5173`
 - Health da API: `http://localhost:8080/health`
 
-No teste manual do frontend, confira a busca de equipamentos, os filtros por status e categoria, o menu em tela pequena, a navegacao por teclado do controle segmentado e a abertura do formulario `Novo emprestimo`. Essas interacoes ainda nao persistem dados.
+Para testar a jornada da Spec 004, crie uma conta local (próxima seção) e entre em `http://localhost:5173`:
+
+1. Com o papel `colaborador`, o login leva a `/catalogo`, com os 12 equipamentos.
+   Os 9 disponíveis têm “Solicitar →”, e os 3 em manutenção mostram “Em manutenção”.
+2. Clique em “Solicitar →”. O card passa a “Emprestado” e aparece a mensagem de empréstimo registrado.
+3. Abra **Meus empréstimos** no topo para ver o item e a data de devolução em `America/Sao_Paulo`.
+4. Com o papel `operacoes`, as duas páginas mostram só “Acesso negado”.
+
+Sem `EQUIPMENT_IMAGE_BASE_URL` no ambiente, os cards mostram “Foto indisponível”.
+Para apagar os empréstimos de teste locais, use `docker compose down -v`, que também apaga o banco local.
 
 ## Criar um usuário de teste local
 
@@ -57,17 +66,16 @@ Resultado esperado: Maven informa `BUILD SUCCESS`, sem falhas de teste, e o Next
 
 ## Atualizar o GitHub
 
-O contrato em `rules/operacao.md` determina que o operador revisa, commita e faz o push. Nunca publique direto em `main`:
+O contrato em `rules/operacao.md` vale para os commits e o push. Use um commit por tarefa, citando a tarefa e o CA-xx, e `git add` com caminhos explícitos. O push direto na `main` só acontece com autorização explícita do operador, sem `--force` e sem tag de entrega:
 
 ```bash
-git switch -c codex/aulas-7-9
 git status --short
 git add <arquivos-da-tarefa>
-git commit -m "<mensagem-da-tarefa>"
-git push -u origin codex/aulas-7-9
+git commit -m "<mensagem-da-tarefa> [Txxx, CA-xx]"
+git push origin main
 ```
 
-Depois do push, abra um pull request para `main` no GitHub. Separe mudancas de regras, andar zero e frontend em commits diferentes.
+Separe mudanças de regras, andar zero e frontend em commits diferentes.
 Inclua `.agents/` e `.codex/` no commit para publicar a skill SOLID e o subagente validador junto com o repositorio. O frontend usa somente pnpm e `pnpm-lock.yaml`; nao misture lockfiles de outros gerenciadores.
 
 ## Testar o agente e a skill SOLID
@@ -94,7 +102,19 @@ A skill fica em `.agents/skills/solid/SKILL.md` e deve citar o codigo real, resp
 
 ## Deploy
 
-A Vercel publica apenas o frontend Next.js. No projeto da Vercel, configure `frontend` como **Root Directory**; o `frontend/vercel.json` fixa o pnpm 10 e deixa o adaptador Next usar o diretorio de saida padrao. O backend Spring Boot precisa de uma hospedagem Java separada; em producao, ele podera usar o PostgreSQL do Supabase por JDBC.
+A Vercel publica apenas o frontend Next.js. No projeto da Vercel, configure `frontend` como **Root Directory**; o `frontend/vercel.json` fixa o pnpm 10 e deixa o adaptador Next usar o diretorio de saida padrao.
+
+O backend Spring Boot roda no Railway, conforme o [ADR-003](docs/adr/003-hospedagem-backend.md):
+
+- **Serviço:** **Root Directory** `backend`, construído pelo `Dockerfile`. O domínio público aponta para a porta 8080.
+- **Variáveis no Railway, sem valores no Git:**
+  - `SPRING_DATASOURCE_URL`, o JDBC do Session pooler do Supabase com `?sslmode=require`;
+  - `SPRING_DATASOURCE_USERNAME` e `SPRING_DATASOURCE_PASSWORD`;
+  - `SESSION_COOKIE_SECURE=true` e `SERVER_PORT=8080`;
+  - `EQUIPMENT_IMAGE_BASE_URL`.
+- **Migrations:** o primeiro deploy aplica as migrations Flyway pendentes.
+
+As fotos dos 12 equipamentos ficam num bucket público do Supabase Storage, com as chaves `equipment/TI-0001.jpg` até `equipment/TI-0012.jpg`. `EQUIPMENT_IMAGE_BASE_URL` é a origem pública do bucket, `https://<projeto>.supabase.co/storage/v1/object/public/<bucket>`, sem barra final e sem `/equipment`. Configure a mesma variável no Railway e no ambiente **Production** da Vercel, e faça um novo deploy do front, porque o Next.js a lê no build.
 
 Para ligar o login publicado, abra primeiro `https://<host-do-backend>/health`
 e confirme HTTP 200 com o banco ativo. No projeto Vercel, configure
