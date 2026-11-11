@@ -16,7 +16,8 @@ O documento de negócio está em docs/PRD.md.
 - rules/spec-flow.md — ordem dos artefatos de uma funcionalidade.
 - rules/operacao.md — quem commita, publica e aprova cada tipo de acao.
 - .agents/skills/solid/SKILL.md — revisao e refatoracao Java orientada por SOLID, invocavel com `$solid`.
-- .codex/agents/spec-validator.toml — unico subagente do projeto; valida specs em modo somente leitura.
+- .agents/skills/imagens-equipamentos/SKILL.md — prepara imagens de equipamentos exclusivamente pela Pixabay, sem publicar em producao.
+- .codex/agents/spec-validator.toml — unico subagente do projeto; valida specs e confere implementacoes em modo somente leitura.
 - docs/andar-zero.md — critérios do esqueleto técnico inicial.
 - docs/specs/ — uma pasta por funcionalidade, com spec, plano e tarefas. A Spec 001 de login está em elaboração.
 
@@ -26,9 +27,9 @@ O documento de negócio está em docs/PRD.md.
 Os demais arquivos em `rules/` descrevem somente procedimentos especializados.
 O estado temporario da execucao fica apenas em `handoff.md`.
 
-## Validacao de specs
+## Validacao de specs e implementacoes
 
-Depois de redigir ou alterar uma spec, delegue sua validacao ao subagente `spec-validator` antes de pedir aprovacao ao operador ou criar `plan.md`. O subagente apenas aponta bloqueios; a aprovacao continua sendo humana.
+Depois de redigir ou alterar uma spec, delegue sua validacao ao subagente `spec-validator` antes de pedir aprovacao ao operador ou criar `plan.md`. Depois da implementacao e dos testes, execute uma nova rodada em contexto limpo e registre a tabela em `docs/specs/<spec>/verification/`. O subagente apenas aponta evidencias e bloqueios; nunca corrige codigo ou teste, e a aprovacao continua sendo humana.
 
 ## Mapa atual
 

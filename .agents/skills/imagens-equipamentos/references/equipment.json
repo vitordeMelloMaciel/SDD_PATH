@@ -1,0 +1,14 @@
+[
+  { "assetCode": "TI-0001", "name": "Notebook 14 polegadas", "category": "notebook", "status": "disponivel", "query": "laptop on white desk" },
+  { "assetCode": "TI-0002", "name": "Notebook 15 polegadas", "category": "notebook", "status": "disponivel", "query": "open laptop minimal desk" },
+  { "assetCode": "TI-0003", "name": "Notebook 13 polegadas", "category": "notebook", "status": "disponivel", "query": "laptop closeup keyboard" },
+  { "assetCode": "TI-0004", "name": "Notebook 15 polegadas", "category": "notebook", "status": "manutencao", "query": "closed laptop on table" },
+  { "assetCode": "TI-0005", "name": "Monitor 24 polegadas", "category": "monitor", "status": "disponivel", "query": "computer monitor on desk" },
+  { "assetCode": "TI-0006", "name": "Monitor 27 polegadas", "category": "monitor", "status": "disponivel", "query": "monitor screen office desk" },
+  { "assetCode": "TI-0007", "name": "Monitor 22 polegadas", "category": "monitor", "status": "manutencao", "query": "black computer screen" },
+  { "assetCode": "TI-0008", "name": "Cabo HDMI 2 m", "category": "cabo", "status": "disponivel", "query": "hdmi cable" },
+  { "assetCode": "TI-0009", "name": "Cabo USB-C 1 m", "category": "cabo", "status": "disponivel", "query": "usb cable white background" },
+  { "assetCode": "TI-0010", "name": "Cabo de rede 3 m", "category": "cabo", "status": "manutencao", "query": "ethernet cable" },
+  { "assetCode": "TI-0011", "name": "Webcam Full HD", "category": "camera", "status": "disponivel", "query": "webcam" },
+  { "assetCode": "TI-0012", "name": "Camera compacta", "category": "camera", "status": "disponivel", "query": "compact camera on table" }
+]

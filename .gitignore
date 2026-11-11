@@ -6,10 +6,16 @@ backend/target/
 backend/.mvn/wrapper/maven-wrapper.jar
 
 # Node / Next.js
-frontend/node_modules/
+node_modules/
 frontend/.next/
 frontend/dist/
 frontend/*.tsbuildinfo
+
+# Ferramentas locais das skills
+.local/
+**/__pycache__/
+*.pyc
+*.pyo
 
 # IDE / OS
 .idea/
